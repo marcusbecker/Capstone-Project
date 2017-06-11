@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Fill It</string>
+    <string name="content_authority">br.com.mvbos.fillit</string>
+</resources>
