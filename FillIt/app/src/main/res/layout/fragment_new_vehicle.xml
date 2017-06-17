@@ -4,38 +4,43 @@
     android:layout_height="match_parent"
     tools:context=".fragment.NewVehicleFragment">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/etPhoto"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="photo"
-            android:inputType="text" />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="name"
-            android:inputType="text" />
+            <ImageButton
+                android:id="@+id/ibPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:backgroundTint="#fff"
+                android:src="@drawable/icon_cam" />
 
-        <EditText
-            android:id="@+id/etFuel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="fuel"
-            android:inputType="text" />
+            <EditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="name"
+                android:inputType="text" />
 
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Add" />
+            <EditText
+                android:id="@+id/etFuel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="fuel"
+                android:inputType="text" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/btnAdd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add" />
 
+        </LinearLayout>
+    </ScrollView>
 </FrameLayout>

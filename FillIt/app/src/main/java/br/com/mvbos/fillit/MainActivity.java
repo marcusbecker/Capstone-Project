@@ -5,34 +5,56 @@ import android.content.UriMatcher;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.fragment.ListVehicleFragment;
 import br.com.mvbos.fillit.fragment.NewVehicleFragment;
 import br.com.mvbos.fillit.fragment.OnFragmentInteractionListener;
+import br.com.mvbos.fillit.model.VehicleModel;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
+
+    private Fragment mContent;
+    public static final String CURRENT_FRAGMENT = "myFragmentName";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            finish();
-            return;
+        setContentView(R.layout.activity_main);
+
+        if (savedInstanceState != null) {
+            mContent = getSupportFragmentManager().getFragment(savedInstanceState, CURRENT_FRAGMENT);
         }
 
-        setContentView(R.layout.activity_main);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            //finish();
+            //return;
+        }
 
         //transaction.addToBackStack(null);
 
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction()
-                .replace(R.id.mainFragment, ListVehicleFragment.newInstance(null, null))
-                .commit();
+        if (mContent == null) {
+            mContent = ListVehicleFragment.newInstance(null, null);
+        }
 
+        startFragment();
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mContent != null) {
+            getSupportFragmentManager().putFragment(outState, CURRENT_FRAGMENT, mContent);
+        }
     }
 
     @Override
@@ -43,12 +65,34 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         final String path = uri.getPath();
         final String lastPathSegment = uri.getLastPathSegment();
 
-        FragmentManager fm = getSupportFragmentManager();
-        fm.beginTransaction()
-                .replace(R.id.mainFragment, NewVehicleFragment.newInstance(0))
-                .addToBackStack(null)
-                .commit();
+        //Update Vehicle
+        mContent = NewVehicleFragment.newInstance(new VehicleModel(1));
+        startFragment();
 
         System.out.println(uri);
+    }
+
+    public void addVehicle(View view) {
+        //New vehicle
+        mContent = NewVehicleFragment.newInstance(new VehicleModel(0));
+        startFragment();
+    }
+
+    private void startFragment() {
+        FragmentManager fm = getSupportFragmentManager();
+        fm.beginTransaction()
+                .replace(R.id.mainFragment, mContent)
+                .addToBackStack(null)
+                .commit();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions,
+                                           int[] grantResults) {
+        if (mContent != null) {
+            mContent.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
     }
 }
