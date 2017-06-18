@@ -96,7 +96,6 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
         //setHasOptionsMenu(true);
         //setListShown(false);
 
-
         getLoaderManager().initLoader(ID_VEHICLE_LOADER, null, this);
     }
 
@@ -134,7 +133,6 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
         switch (id) {
-
             case ID_VEHICLE_LOADER:
                 return new CursorLoader(getActivity(),
                         FillItContract.VehicleEntry.CONTENT_URI,

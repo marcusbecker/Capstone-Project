@@ -7,6 +7,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -23,19 +24,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
+import br.com.mvbos.fillit.model.FuelModel;
 import br.com.mvbos.fillit.model.VehicleModel;
 import br.com.mvbos.fillit.util.FileUtil;
+import br.com.mvbos.fillit.util.ModelBuilder;
 
-public class NewVehicleFragment extends Fragment {
+public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private static final String ARG_PARAM_ID = "param_id";
     private static final String ARG_PARAM_PATH = "param_path";
     private static final int REQUEST_TAKE_PHOTO = 1;
@@ -45,12 +52,13 @@ public class NewVehicleFragment extends Fragment {
 
     private ImageButton mPhoto;
     private EditText mName;
-    private EditText mFuel;
+    private Spinner mFuel;
 
     private OnFragmentInteractionListener mListener;
     private String mCurrentPhotoPath;
 
     private File mStorageDir;
+    private List<FuelModel> mFuels;
 
 
     public NewVehicleFragment() {
@@ -142,15 +150,8 @@ public class NewVehicleFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        String fuel = mFuel.getText().toString();
-
-        if (!fuel.isEmpty()) {
-            mVehicle.setFuel(Long.valueOf(mFuel.getText().toString()));
-        } else {
-            mVehicle.setFuel(0);
-        }
-
         mVehicle.setName(mName.getText().toString());
+        mVehicle.setFuel(mFuels.get(mFuel.getSelectedItemPosition()).getId());
         //outState.putParcelable(ARG_PARAM_ID, mVehicle);
         outState.putString(ARG_PARAM_PATH, mCurrentPhotoPath);
     }
@@ -168,10 +169,29 @@ public class NewVehicleFragment extends Fragment {
 
         mPhoto = (ImageButton) view.findViewById(R.id.ibPhoto);
         mName = (EditText) view.findViewById(R.id.etName);
-        mFuel = (EditText) view.findViewById(R.id.etFuel);
+        mFuel = (Spinner) view.findViewById(R.id.spFuel);
 
         mName.setText(mVehicle.getName());
-        mFuel.setText(String.valueOf(mVehicle.getFuel()));
+
+        final Uri fuelUri = FillItContract.FuelEntry.CONTENT_URI;
+        final Cursor cursor = getContext().getContentResolver().query(fuelUri, null, null, null, null);
+        mFuels = ModelBuilder.buildFuelList(cursor);
+        mFuels.add(0, new FuelModel(0, "Combustível padrão", 0));
+
+        int selected = 0;
+        CharSequence[] fuelArray = new String[mFuels.size()];
+
+        for (int i = 0; i < mFuels.size(); i++) {
+            fuelArray[i] = mFuels.get(i).getName();
+            if (mFuels.get(i).getId() == mVehicle.getId()) {
+                selected = i;
+            }
+        }
+
+        ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, fuelArray);
+        mFuel.setAdapter(spinnerAdapter);
+        mFuel.setSelection(selected);
+        mFuel.setOnItemSelectedListener(this);
 
         if (mVehicle.hasPhoto()) {
             view.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -287,4 +307,13 @@ public class NewVehicleFragment extends Fragment {
         mListener = null;
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
+        mVehicle.setFuel(mFuels.get(pos).getId());
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 }

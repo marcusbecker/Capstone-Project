@@ -2,7 +2,11 @@ package br.com.mvbos.fillit.util;
 
 import android.database.Cursor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import br.com.mvbos.fillit.data.FillItContract;
+import br.com.mvbos.fillit.model.FuelModel;
 import br.com.mvbos.fillit.model.VehicleModel;
 
 /**
@@ -54,6 +58,21 @@ public class ModelBuilder {
         }
 
         return v;
+    }
+
+    public static List<FuelModel> buildFuelList(Cursor cursor) {
+        List<FuelModel> list = new ArrayList<>(cursor.getColumnCount());
+        while (cursor.moveToNext()) {
+            FuelModel v = new FuelModel();
+            v.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.FuelEntry._ID)));
+            v.setName(cursor.getString(cursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_NAME)));
+            v.setDataSync(cursor.getLong(cursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_DATASYNC)));
+
+            list.add(v);
+        }
+
+        cursor.close();
+        return list;
     }
 /*
     public static FillModel buildFill(Cursor query) {

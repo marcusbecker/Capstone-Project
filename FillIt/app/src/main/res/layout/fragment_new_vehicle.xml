@@ -28,12 +28,10 @@
                 android:hint="name"
                 android:inputType="text" />
 
-            <EditText
-                android:id="@+id/etFuel"
+            <Spinner
+                android:id="@+id/spFuel"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="fuel"
-                android:inputType="text" />
+                android:layout_height="wrap_content" />
 
             <Button
                 android:id="@+id/btnAdd"
