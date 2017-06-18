@@ -1,11 +1,11 @@
 package br.com.mvbos.fillit.fragment;
 
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -83,6 +83,7 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
         mRecyclerView.setHasFixedSize(true);
 
         mAdapter = new VehicleAdapter(null, this);
+        mAdapter.setPath(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES));
 
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -163,9 +164,9 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     public void onClick(View view) {
         final Cursor c = mAdapter.getCursor();
         final int ci = c.getColumnIndex(FillItContract.VehicleEntry._ID);
-        final int itemPosition = mRecyclerView.getChildLayoutPosition((View) view.getParent());
+        final int itemPosition = mRecyclerView.getChildLayoutPosition(view);
 
         c.moveToPosition(itemPosition);
-        onButtonPressed(new ContentUris().withAppendedId(FillItContract.VehicleEntry.CONTENT_URI, c.getLong(ci)));
+        onButtonPressed(FillItContract.VehicleEntry.buildVehicleUri(c.getLong(ci)));
     }
 }

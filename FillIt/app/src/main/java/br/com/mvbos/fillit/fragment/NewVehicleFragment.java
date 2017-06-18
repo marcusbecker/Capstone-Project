@@ -2,7 +2,7 @@ package br.com.mvbos.fillit.fragment;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentUris;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -56,7 +56,7 @@ public class NewVehicleFragment extends Fragment {
     public NewVehicleFragment() {
     }
 
-    public static NewVehicleFragment newInstance(VehicleModel v) {
+    public static NewVehicleFragment newInstance(final VehicleModel v) {
         NewVehicleFragment fragment = new NewVehicleFragment();
         Bundle args = new Bundle();
         args.putParcelable(ARG_PARAM_ID, v);
@@ -84,7 +84,7 @@ public class NewVehicleFragment extends Fragment {
             }
 
             if (photoFile != null) {
-                if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                if (isEnableVersionBoolean()) {
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
 
                 } else {
@@ -103,12 +103,11 @@ public class NewVehicleFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+        if (isEnableVersionBoolean()) {
             if (requestCode == REQUEST_TAKE_PHOTO && resultCode == Activity.RESULT_OK) {
                 Bundle extras = data.getExtras();
                 Bitmap imageBitmap = (Bitmap) extras.get("data");
                 FileUtil.setPic(mPhoto, imageBitmap, mCurrentPhotoPath);
-                //mPhoto.setImageBitmap(imageBitmap);
                 mVehicle.setPhoto(new File(mCurrentPhotoPath).getName());
             }
         } else {
@@ -117,14 +116,16 @@ public class NewVehicleFragment extends Fragment {
                 mVehicle.setPhoto(new File(mCurrentPhotoPath).getName());
             }
         }
+    }
 
+    private boolean isEnableVersionBoolean() {
+        return Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mStorageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
 
         if (getArguments() != null) {
             mVehicle = getArguments().getParcelable(ARG_PARAM_ID);
@@ -134,7 +135,6 @@ public class NewVehicleFragment extends Fragment {
             if (savedInstanceState.containsKey(ARG_PARAM_PATH)) {
                 mCurrentPhotoPath = savedInstanceState.getString(ARG_PARAM_PATH);
             }
-
         }
     }
 
@@ -208,7 +208,8 @@ public class NewVehicleFragment extends Fragment {
         view.findViewById(R.id.btnAdd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Uri mVehicleUri;
+                boolean success;
+                final ContentResolver resolver = view.getContext().getContentResolver();
                 ContentValues mVehicleValues = new ContentValues();
 
                 mVehicle.setFuel(0);
@@ -219,23 +220,29 @@ public class NewVehicleFragment extends Fragment {
                 mVehicleValues.put(FillItContract.VehicleEntry.COLUMN_NAME_FUEL, mVehicle.getFuel());
 
                 if (mVehicle.getId() > 0) {
-                    view.getContext().getContentResolver().update(
+                    int res = resolver.update(
                             FillItContract.VehicleEntry.CONTENT_URI,
                             mVehicleValues,
                             FillItContract.VehicleEntry._ID + "=?",
                             new String[]{String.valueOf(mVehicle.getId())}
                     );
 
-                    mVehicleUri = new ContentUris().withAppendedId(FillItContract.VehicleEntry.CONTENT_URI, mVehicle.getId());
+                    success = res > 0;
 
                 } else {
-                    mVehicleUri = view.getContext().getContentResolver().insert(
+                    Uri vehicleUri = resolver.insert(
                             FillItContract.VehicleEntry.CONTENT_URI,
                             mVehicleValues
                     );
+
+                    success = vehicleUri != null;
                 }
 
-                onButtonPressed(mVehicleUri);
+                if (success) {
+                    onButtonPressed(FillItContract.VehicleEntry.CONTENT_URI);
+                } else {
+                    Toast.makeText(getContext(), "Data base error", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

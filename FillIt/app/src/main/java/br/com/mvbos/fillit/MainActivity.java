@@ -3,6 +3,7 @@ package br.com.mvbos.fillit;
 
 import android.content.UriMatcher;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,11 +16,16 @@ import br.com.mvbos.fillit.fragment.ListVehicleFragment;
 import br.com.mvbos.fillit.fragment.NewVehicleFragment;
 import br.com.mvbos.fillit.fragment.OnFragmentInteractionListener;
 import br.com.mvbos.fillit.model.VehicleModel;
+import br.com.mvbos.fillit.util.ModelBuilder;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
     private Fragment mContent;
     public static final String CURRENT_FRAGMENT = "myFragmentName";
+
+    private final UriMatcher mMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    private static final int VEHICLE = 300;
+    private static final int VEHICLE_WITH_ID = 301;
 
 
     @Override
@@ -27,6 +33,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        final String authority = FillItContract.CONTENT_AUTHORITY;
+        mMatcher.addURI(authority, FillItContract.PATH_VEHICLE, VEHICLE);
+        mMatcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_ID);
+
 
         if (savedInstanceState != null) {
             mContent = getSupportFragmentManager().getFragment(savedInstanceState, CURRENT_FRAGMENT);
@@ -59,17 +70,23 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final int match = matcher.match(FillItContract.VehicleEntry.CONTENT_URI);
 
-        final String path = uri.getPath();
-        final String lastPathSegment = uri.getLastPathSegment();
+        final int match = mMatcher.match(uri);
 
-        //Update Vehicle
-        mContent = NewVehicleFragment.newInstance(new VehicleModel(1));
+        switch (match) {
+            case VEHICLE:
+                mContent = ListVehicleFragment.newInstance(null, null);
+                break;
+            case VEHICLE_WITH_ID:
+                final Cursor query = getContentResolver().query(uri, null, null, null, null);
+                VehicleModel v = ModelBuilder.buildVehicle(query);
+                mContent = NewVehicleFragment.newInstance(v);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
         startFragment();
-
-        System.out.println(uri);
     }
 
     public void addVehicle(View view) {

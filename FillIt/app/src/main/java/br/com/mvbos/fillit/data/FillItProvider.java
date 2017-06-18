@@ -16,38 +16,43 @@ public class FillItProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private FillItDbHelper mOpenHelper;
     static final int FUEL = 100;
-    static final int FUEL_WITH_NAME = 101;
-    static final int FUEL_WITH_DATASYNC = 102;
+    static final int FUEL_WITH_ID = 101;
+    static final int FUEL_WITH_NAME = 102;
+    static final int FUEL_WITH_DATASYNC = 103;
 
     static final int FLAG = 200;
-    static final int FLAG_WITH_NAME = 201;
-    static final int FLAG_WITH_ICON = 202;
-    static final int FLAG_WITH_DATASYNC = 203;
+    static final int FLAG_WITH_ID = 201;
+    static final int FLAG_WITH_NAME = 202;
+    static final int FLAG_WITH_ICON = 203;
+    static final int FLAG_WITH_DATASYNC = 204;
 
     static final int VEHICLE = 300;
-    static final int VEHICLE_WITH_PHOTO = 301;
-    static final int VEHICLE_WITH_NAME = 302;
-    static final int VEHICLE_WITH_FUEL = 303;
-    static final int VEHICLE_WITH_DATASYNC = 304;
+    static final int VEHICLE_WITH_ID = 301;
+    static final int VEHICLE_WITH_PHOTO = 302;
+    static final int VEHICLE_WITH_NAME = 303;
+    static final int VEHICLE_WITH_FUEL = 304;
+    static final int VEHICLE_WITH_DATASYNC = 305;
 
     static final int FILL = 400;
-    static final int FILL_WITH_GASSTATION = 401;
-    static final int FILL_WITH_VEHICLE = 402;
-    static final int FILL_WITH_FUEL = 403;
-    static final int FILL_WITH_DATE = 404;
-    static final int FILL_WITH_PRICE = 405;
-    static final int FILL_WITH_LITERS = 406;
-    static final int FILL_WITH_LAT = 407;
-    static final int FILL_WITH_LNG = 408;
-    static final int FILL_WITH_DATASYNC = 409;
+    static final int FILL_WITH_ID = 401;
+    static final int FILL_WITH_GASSTATION = 402;
+    static final int FILL_WITH_VEHICLE = 403;
+    static final int FILL_WITH_FUEL = 404;
+    static final int FILL_WITH_DATE = 405;
+    static final int FILL_WITH_PRICE = 406;
+    static final int FILL_WITH_LITERS = 407;
+    static final int FILL_WITH_LAT = 408;
+    static final int FILL_WITH_LNG = 409;
+    static final int FILL_WITH_DATASYNC = 410;
 
     static final int GASSTATION = 500;
-    static final int GASSTATION_WITH_NAME = 501;
-    static final int GASSTATION_WITH_LAT = 502;
-    static final int GASSTATION_WITH_LNG = 503;
-    static final int GASSTATION_WITH_FLAG = 504;
-    static final int GASSTATION_WITH_ADDRESS = 505;
-    static final int GASSTATION_WITH_DATASYNC = 506;
+    static final int GASSTATION_WITH_ID = 501;
+    static final int GASSTATION_WITH_NAME = 502;
+    static final int GASSTATION_WITH_LAT = 503;
+    static final int GASSTATION_WITH_LNG = 504;
+    static final int GASSTATION_WITH_FLAG = 505;
+    static final int GASSTATION_WITH_ADDRESS = 506;
+    static final int GASSTATION_WITH_DATASYNC = 507;
 
     private static final String sFuelId = FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry._ID + " = ? ";
     private static final String sFuelName = FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry.COLUMN_NAME_NAME + " = ? ";
@@ -187,23 +192,26 @@ public class FillItProvider extends ContentProvider {
     static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = FillItContract.CONTENT_AUTHORITY;
-
         matcher.addURI(authority, FillItContract.PATH_FUEL, FUEL);
+        matcher.addURI(authority, FillItContract.PATH_FUEL + "/#", FUEL_WITH_ID);
         matcher.addURI(authority, FillItContract.PATH_FUEL + "/*", FUEL_WITH_NAME);
         matcher.addURI(authority, FillItContract.PATH_FUEL + "/#", FUEL_WITH_DATASYNC);
 
         matcher.addURI(authority, FillItContract.PATH_FLAG, FLAG);
+        matcher.addURI(authority, FillItContract.PATH_FLAG + "/#", FLAG_WITH_ID);
         matcher.addURI(authority, FillItContract.PATH_FLAG + "/*", FLAG_WITH_NAME);
         matcher.addURI(authority, FillItContract.PATH_FLAG + "/*", FLAG_WITH_ICON);
         matcher.addURI(authority, FillItContract.PATH_FLAG + "/#", FLAG_WITH_DATASYNC);
 
         matcher.addURI(authority, FillItContract.PATH_VEHICLE, VEHICLE);
+        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_ID);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/*", VEHICLE_WITH_PHOTO);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/*", VEHICLE_WITH_NAME);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_FUEL);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_DATASYNC);
 
         matcher.addURI(authority, FillItContract.PATH_FILL, FILL);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_ID);
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_GASSTATION);
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_VEHICLE);
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_FUEL);
@@ -215,6 +223,7 @@ public class FillItProvider extends ContentProvider {
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_DATASYNC);
 
         matcher.addURI(authority, FillItContract.PATH_GASSTATION, GASSTATION);
+        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_ID);
         matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/*", GASSTATION_WITH_NAME);
         matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_LAT);
         matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_LNG);
@@ -225,24 +234,37 @@ public class FillItProvider extends ContentProvider {
         return matcher;
     }
 
-
     @Override
     public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             // Fuel
+            case FUEL:
+                return FillItContract.FuelEntry.CONTENT_TYPE;
+            case FUEL_WITH_ID:
+                return FillItContract.FuelEntry.CONTENT_ITEM_TYPE;
             case FUEL_WITH_NAME:
                 return FillItContract.FuelEntry.CONTENT_ITEM_TYPE;
             case FUEL_WITH_DATASYNC:
                 return FillItContract.FuelEntry.CONTENT_ITEM_TYPE;
+
             // Flag
+            case FLAG:
+                return FillItContract.FlagEntry.CONTENT_TYPE;
+            case FLAG_WITH_ID:
+                return FillItContract.FlagEntry.CONTENT_ITEM_TYPE;
             case FLAG_WITH_NAME:
                 return FillItContract.FlagEntry.CONTENT_ITEM_TYPE;
             case FLAG_WITH_ICON:
                 return FillItContract.FlagEntry.CONTENT_ITEM_TYPE;
             case FLAG_WITH_DATASYNC:
                 return FillItContract.FlagEntry.CONTENT_ITEM_TYPE;
+
             // Vehicle
+            case VEHICLE:
+                return FillItContract.VehicleEntry.CONTENT_TYPE;
+            case VEHICLE_WITH_ID:
+                return FillItContract.VehicleEntry.CONTENT_ITEM_TYPE;
             case VEHICLE_WITH_PHOTO:
                 return FillItContract.VehicleEntry.CONTENT_ITEM_TYPE;
             case VEHICLE_WITH_NAME:
@@ -251,7 +273,12 @@ public class FillItProvider extends ContentProvider {
                 return FillItContract.VehicleEntry.CONTENT_ITEM_TYPE;
             case VEHICLE_WITH_DATASYNC:
                 return FillItContract.VehicleEntry.CONTENT_ITEM_TYPE;
+
             // Fill
+            case FILL:
+                return FillItContract.FillEntry.CONTENT_TYPE;
+            case FILL_WITH_ID:
+                return FillItContract.FillEntry.CONTENT_ITEM_TYPE;
             case FILL_WITH_GASSTATION:
                 return FillItContract.FillEntry.CONTENT_ITEM_TYPE;
             case FILL_WITH_VEHICLE:
@@ -270,7 +297,12 @@ public class FillItProvider extends ContentProvider {
                 return FillItContract.FillEntry.CONTENT_ITEM_TYPE;
             case FILL_WITH_DATASYNC:
                 return FillItContract.FillEntry.CONTENT_ITEM_TYPE;
+
             // GasStation
+            case GASSTATION:
+                return FillItContract.GasStationEntry.CONTENT_TYPE;
+            case GASSTATION_WITH_ID:
+                return FillItContract.GasStationEntry.CONTENT_ITEM_TYPE;
             case GASSTATION_WITH_NAME:
                 return FillItContract.GasStationEntry.CONTENT_ITEM_TYPE;
             case GASSTATION_WITH_LAT:
@@ -283,6 +315,7 @@ public class FillItProvider extends ContentProvider {
                 return FillItContract.GasStationEntry.CONTENT_ITEM_TYPE;
             case GASSTATION_WITH_DATASYNC:
                 return FillItContract.GasStationEntry.CONTENT_ITEM_TYPE;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -301,6 +334,13 @@ public class FillItProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                break;
+            }
+
+            case FUEL_WITH_ID: {
+                String mSelection = sFuelId;
+                String[] mSelectionArgs = {uri.getPathSegments().get(1)};
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FuelEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -337,6 +377,13 @@ public class FillItProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                break;
+            }
+
+            case FLAG_WITH_ID: {
+                String mSelection = sFlagId;
+                String[] mSelectionArgs = {uri.getPathSegments().get(1)};
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FlagEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -385,6 +432,13 @@ public class FillItProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                break;
+            }
+
+            case VEHICLE_WITH_ID: {
+                String mSelection = sVehicleId;
+                String[] mSelectionArgs = {uri.getPathSegments().get(1)};
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.VehicleEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -445,6 +499,13 @@ public class FillItProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                break;
+            }
+
+            case FILL_WITH_ID: {
+                String mSelection = sFillId;
+                String[] mSelectionArgs = {uri.getPathSegments().get(1)};
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FillEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -565,6 +626,13 @@ public class FillItProvider extends ContentProvider {
                         null,
                         null,
                         sortOrder);
+                break;
+            }
+
+            case GASSTATION_WITH_ID: {
+                String mSelection = sGasStationId;
+                String[] mSelectionArgs = {uri.getPathSegments().get(1)};
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.GasStationEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -776,13 +844,10 @@ public class FillItProvider extends ContentProvider {
     public int bulkInsert(Uri uri, ContentValues[] values) {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
         final int match = sUriMatcher.match(uri);
-
         int returnCount = 0;
-
         switch (match) {
             case FUEL:
                 db.beginTransaction();
-
                 try {
                     for (ContentValues value : values) {
                         long _id = db.insert(FillItContract.FuelEntry.TABLE_NAME, null, value);
@@ -798,7 +863,6 @@ public class FillItProvider extends ContentProvider {
                 return returnCount;
             case FLAG:
                 db.beginTransaction();
-
                 try {
                     for (ContentValues value : values) {
                         long _id = db.insert(FillItContract.FlagEntry.TABLE_NAME, null, value);
@@ -814,7 +878,6 @@ public class FillItProvider extends ContentProvider {
                 return returnCount;
             case VEHICLE:
                 db.beginTransaction();
-
                 try {
                     for (ContentValues value : values) {
                         long _id = db.insert(FillItContract.VehicleEntry.TABLE_NAME, null, value);
@@ -845,7 +908,6 @@ public class FillItProvider extends ContentProvider {
                 return returnCount;
             case GASSTATION:
                 db.beginTransaction();
-
                 try {
                     for (ContentValues value : values) {
                         long _id = db.insert(FillItContract.GasStationEntry.TABLE_NAME, null, value);
@@ -871,8 +933,3 @@ public class FillItProvider extends ContentProvider {
     }
 
 }
-
-
-
-
-

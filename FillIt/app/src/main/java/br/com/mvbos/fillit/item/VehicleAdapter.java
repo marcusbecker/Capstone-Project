@@ -1,14 +1,20 @@
 package br.com.mvbos.fillit.item;
 
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.File;
 
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
+import br.com.mvbos.fillit.util.FileUtil;
 
 /**
  * Created by Marcus Becker on 15/06/2017.
@@ -17,6 +23,7 @@ import br.com.mvbos.fillit.data.FillItContract;
 public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHolder> {
 
     private Cursor mCursor;
+    private File mPath;
     private View.OnClickListener mOnClickItem;
 
     public VehicleAdapter(Cursor cursor, View.OnClickListener clickItem) {
@@ -25,7 +32,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView mTextViewPhoto;
+        public ImageView mImageViewPhoto;
         public TextView mTextViewName;
         public TextView mTextViewFuel;
 
@@ -33,7 +40,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
 
         public ViewHolder(View view) {
             super(view);
-            mTextViewPhoto = (TextView) view.findViewById(R.id.tvPhoto);
+            mImageViewPhoto = (ImageView) view.findViewById(R.id.ivPhoto);
             mTextViewName = (TextView) view.findViewById(R.id.tvName);
             mTextViewFuel = (TextView) view.findViewById(R.id.tvFuel);
             //mTextViewDataSync = (TextView) view.findViewById(R.id.tvDataSync);
@@ -58,7 +65,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
     @Override
     public VehicleAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_vehicle, parent, false);
-        //v.setOnClickListener(mOnClickItem);
+        v.setOnClickListener(mOnClickItem);
 
         return new ViewHolder(v);
     }
@@ -72,12 +79,24 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
         long fuel = mCursor.getLong(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_FUEL));
         //Date dataSync = mCursor.getDate(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_DATASYNC));
 
-        holder.mTextViewPhoto.setText(photo);
+        if (!photo.isEmpty()) {
+            final Bitmap imageBitmap = BitmapFactory.decodeFile(new File(mPath, photo).getAbsolutePath());
+            holder.mImageViewPhoto.setImageBitmap(FileUtil.roundBitmap(imageBitmap));
+        }
+
+
         holder.mTextViewName.setText(name);
         //holder.mTextViewFuel.setText(fuel);
         //holder.mTextViewDataSync.setText(dataSync);
+        //holder.mTextViewName.setOnClickListener(mOnClickItem);
+    }
 
-        holder.mTextViewName.setOnClickListener(mOnClickItem);
+    public File getPath() {
+        return mPath;
+    }
+
+    public void setPath(File path) {
+        this.mPath = path;
     }
 
     @Override

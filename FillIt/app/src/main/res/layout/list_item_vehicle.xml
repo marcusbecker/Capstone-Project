@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#8f8585"
-    android:orientation="vertical">
+    android:background="#fff">
 
-    <TextView
-        android:id="@+id/tvPhoto"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="photo"
-        android:inputType="text" />
+    <ImageView
+        android:id="@+id/ivPhoto"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:adjustViewBounds="true"
+        android:layout_margin="8dp"
+        android:contentDescription="photo" />
 
     <TextView
         android:id="@+id/tvName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="name"
-        android:inputType="text" />
+        android:inputType="text"
+        android:layout_alignTop="@+id/ivPhoto"
+        android:layout_toEndOf="@+id/ivPhoto" />
 
     <TextView
         android:id="@+id/tvFuel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="fuel"
-        android:inputType="text" />
+        android:inputType="text"
+        android:layout_below="@+id/tvName"
+        android:layout_alignStart="@+id/tvName" />
 
-</LinearLayout>
+</RelativeLayout>
