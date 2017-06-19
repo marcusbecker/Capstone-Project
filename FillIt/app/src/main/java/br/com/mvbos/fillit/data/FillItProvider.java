@@ -32,6 +32,7 @@ public class FillItProvider extends ContentProvider {
     static final int VEHICLE_WITH_NAME = 303;
     static final int VEHICLE_WITH_FUEL = 304;
     static final int VEHICLE_WITH_DATASYNC = 305;
+    static final int VEHICLE_JOIN_FUEL = 306;
 
     static final int FILL = 400;
     static final int FILL_WITH_ID = 401;
@@ -44,6 +45,7 @@ public class FillItProvider extends ContentProvider {
     static final int FILL_WITH_LAT = 408;
     static final int FILL_WITH_LNG = 409;
     static final int FILL_WITH_DATASYNC = 410;
+    static final int FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL = 411;
 
     static final int GASSTATION = 500;
     static final int GASSTATION_WITH_ID = 501;
@@ -53,6 +55,7 @@ public class FillItProvider extends ContentProvider {
     static final int GASSTATION_WITH_FLAG = 505;
     static final int GASSTATION_WITH_ADDRESS = 506;
     static final int GASSTATION_WITH_DATASYNC = 507;
+    static final int GASSTATION_JOIN_FLAG = 508;
 
     private static final String sFuelId = FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry._ID + " = ? ";
     private static final String sFuelName = FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry.COLUMN_NAME_NAME + " = ? ";
@@ -88,56 +91,47 @@ public class FillItProvider extends ContentProvider {
     private static final String sGasStationAddress = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_ADDRESS + " = ? ";
     private static final String sGasStationDataSync = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_DATASYNC + " = ? ";
 
-    private static final SQLiteQueryBuilder sFuelByVehicleByFill;
-    private static final SQLiteQueryBuilder sFlagByGasStation;
-    private static final SQLiteQueryBuilder sVehicleByFill;
-    private static final SQLiteQueryBuilder sGasStationByFill;
+    private static final SQLiteQueryBuilder sVehicleJoinFuel;
+    private static final SQLiteQueryBuilder sFillJoinGasStationJoinVehicleJoinFuel;
+    private static final SQLiteQueryBuilder sGasStationJoinFlag;
 
     static {
-        sFuelByVehicleByFill = new SQLiteQueryBuilder();
-        sFuelByVehicleByFill.setTables(
-                FillItContract.VehicleEntry.TABLE_NAME + " INNER JOIN " +
+        sVehicleJoinFuel = new SQLiteQueryBuilder();
+        sVehicleJoinFuel.setTables(
+                FillItContract.VehicleEntry.TABLE_NAME + " LEFT JOIN " +
                         FillItContract.FuelEntry.TABLE_NAME + " ON " +
                         FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry.COLUMN_NAME_FUEL + " = " +
-                        FillItContract.FuelEntry.TABLE_NAME + FillItContract.FuelEntry._ID
-                        + ", " +
-                        FillItContract.FillEntry.TABLE_NAME + " INNER JOIN " +
-                        FillItContract.FuelEntry.TABLE_NAME + " ON " +
-                        FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_FUEL + " = " +
-                        FillItContract.FuelEntry.TABLE_NAME + FillItContract.FuelEntry._ID
+                        FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry._ID
         );
 
-        sFlagByGasStation = new SQLiteQueryBuilder();
-        sFlagByGasStation.setTables(
-                FillItContract.GasStationEntry.TABLE_NAME + " INNER JOIN " +
-                        FillItContract.FlagEntry.TABLE_NAME + " ON " +
-                        FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_FLAG + " = " +
-                        FillItContract.FlagEntry.TABLE_NAME + FillItContract.FlagEntry._ID
-        );
-
-        sVehicleByFill = new SQLiteQueryBuilder();
-        sVehicleByFill.setTables(
-                FillItContract.FillEntry.TABLE_NAME + " INNER JOIN " +
-                        FillItContract.VehicleEntry.TABLE_NAME + " ON " +
-                        FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_VEHICLE + " = " +
-                        FillItContract.VehicleEntry.TABLE_NAME + FillItContract.VehicleEntry._ID
-        );
-
-        sGasStationByFill = new SQLiteQueryBuilder();
-        sGasStationByFill.setTables(
-                FillItContract.FillEntry.TABLE_NAME + " INNER JOIN " +
+        sFillJoinGasStationJoinVehicleJoinFuel = new SQLiteQueryBuilder();
+        sFillJoinGasStationJoinVehicleJoinFuel.setTables(
+                FillItContract.FillEntry.TABLE_NAME + " LEFT JOIN " +
                         FillItContract.GasStationEntry.TABLE_NAME + " ON " +
                         FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_GASSTATION + " = " +
-                        FillItContract.GasStationEntry.TABLE_NAME + FillItContract.GasStationEntry._ID
+                        FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry._ID
+                        + " LEFT JOIN " +
+                        FillItContract.VehicleEntry.TABLE_NAME + " ON " +
+                        FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_VEHICLE + " = " +
+                        FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry._ID
+                        + " LEFT JOIN " +
+                        FillItContract.FuelEntry.TABLE_NAME + " ON " +
+                        FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_FUEL + " = " +
+                        FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry._ID
+        );
+
+        sGasStationJoinFlag = new SQLiteQueryBuilder();
+        sGasStationJoinFlag.setTables(
+                FillItContract.GasStationEntry.TABLE_NAME + " LEFT JOIN " +
+                        FillItContract.FlagEntry.TABLE_NAME + " ON " +
+                        FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_FLAG + " = " +
+                        FillItContract.FlagEntry.TABLE_NAME + "." + FillItContract.FlagEntry._ID
         );
 
     }
 
-    private Cursor getFuelByVehicleByFill(Uri uri, String[] projection, String sortOrder) {
-        String param = uri.getPathSegments().get(1);
-        String selection = sFuelId;
-        String[] selectionArgs = new String[]{param};
-        return sFuelByVehicleByFill.query(mOpenHelper.getReadableDatabase(),
+    private Cursor getVehicleJoinFuel(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        return sVehicleJoinFuel.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 selection,
                 selectionArgs,
@@ -147,11 +141,8 @@ public class FillItProvider extends ContentProvider {
         );
     }
 
-    private Cursor getFlagByGasStation(Uri uri, String[] projection, String sortOrder) {
-        String param = uri.getPathSegments().get(1);
-        String selection = sFlagId;
-        String[] selectionArgs = new String[]{param};
-        return sFlagByGasStation.query(mOpenHelper.getReadableDatabase(),
+    private Cursor getFillJoinGasStationJoinVehicleJoinFuel(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        return sFillJoinGasStationJoinVehicleJoinFuel.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 selection,
                 selectionArgs,
@@ -161,25 +152,8 @@ public class FillItProvider extends ContentProvider {
         );
     }
 
-    private Cursor getVehicleByFill(Uri uri, String[] projection, String sortOrder) {
-        String param = uri.getPathSegments().get(1);
-        String selection = sVehicleId;
-        String[] selectionArgs = new String[]{param};
-        return sVehicleByFill.query(mOpenHelper.getReadableDatabase(),
-                projection,
-                selection,
-                selectionArgs,
-                null,
-                null,
-                sortOrder
-        );
-    }
-
-    private Cursor getGasStationByFill(Uri uri, String[] projection, String sortOrder) {
-        String param = uri.getPathSegments().get(1);
-        String selection = sGasStationId;
-        String[] selectionArgs = new String[]{param};
-        return sGasStationByFill.query(mOpenHelper.getReadableDatabase(),
+    private Cursor getGasStationJoinFlag(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        return sGasStationJoinFlag.query(mOpenHelper.getReadableDatabase(),
                 projection,
                 selection,
                 selectionArgs,
@@ -209,6 +183,7 @@ public class FillItProvider extends ContentProvider {
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/*", VEHICLE_WITH_NAME);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_FUEL);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_VEHICLE_JOIN_FUEL + "/", VEHICLE_JOIN_FUEL);
 
         matcher.addURI(authority, FillItContract.PATH_FILL, FILL);
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_ID);
@@ -221,6 +196,7 @@ public class FillItProvider extends ContentProvider {
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_LAT);
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_LNG);
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL + "/", FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL);
 
         matcher.addURI(authority, FillItContract.PATH_GASSTATION, GASSTATION);
         matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_ID);
@@ -230,6 +206,7 @@ public class FillItProvider extends ContentProvider {
         matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_FLAG);
         matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/*", GASSTATION_WITH_ADDRESS);
         matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_GASSTATION_JOIN_FLAG + "/", GASSTATION_JOIN_FLAG);
 
         return matcher;
     }
@@ -273,6 +250,8 @@ public class FillItProvider extends ContentProvider {
                 return FillItContract.VehicleEntry.CONTENT_ITEM_TYPE;
             case VEHICLE_WITH_DATASYNC:
                 return FillItContract.VehicleEntry.CONTENT_ITEM_TYPE;
+            case VEHICLE_JOIN_FUEL:
+                return FillItContract.VehicleEntry.CONTENT_TYPE;
 
             // Fill
             case FILL:
@@ -297,6 +276,8 @@ public class FillItProvider extends ContentProvider {
                 return FillItContract.FillEntry.CONTENT_ITEM_TYPE;
             case FILL_WITH_DATASYNC:
                 return FillItContract.FillEntry.CONTENT_ITEM_TYPE;
+            case FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL:
+                return FillItContract.FillEntry.CONTENT_TYPE;
 
             // GasStation
             case GASSTATION:
@@ -315,6 +296,8 @@ public class FillItProvider extends ContentProvider {
                 return FillItContract.GasStationEntry.CONTENT_ITEM_TYPE;
             case GASSTATION_WITH_DATASYNC:
                 return FillItContract.GasStationEntry.CONTENT_ITEM_TYPE;
+            case GASSTATION_JOIN_FLAG:
+                return FillItContract.GasStationEntry.CONTENT_TYPE;
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -355,7 +338,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FUEL_WITH_DATASYNC: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FuelEntry.TABLE_NAME,
@@ -398,7 +380,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FLAG_WITH_ICON: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FlagEntry.TABLE_NAME,
@@ -410,7 +391,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FLAG_WITH_DATASYNC: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FlagEntry.TABLE_NAME,
@@ -453,7 +433,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case VEHICLE_WITH_NAME: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.VehicleEntry.TABLE_NAME,
@@ -465,7 +444,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case VEHICLE_WITH_FUEL: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.VehicleEntry.TABLE_NAME,
@@ -477,7 +455,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case VEHICLE_WITH_DATASYNC: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.VehicleEntry.TABLE_NAME,
@@ -486,6 +463,16 @@ public class FillItProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
+                        sortOrder);
+                break;
+            }
+
+            case VEHICLE_JOIN_FUEL: {
+                retCursor = getVehicleJoinFuel(
+                        uri,
+                        projection,
+                        selection,
+                        selectionArgs,
                         sortOrder);
                 break;
             }
@@ -520,7 +507,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FILL_WITH_VEHICLE: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FillEntry.TABLE_NAME,
@@ -532,7 +518,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FILL_WITH_FUEL: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FillEntry.TABLE_NAME,
@@ -544,7 +529,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FILL_WITH_DATE: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FillEntry.TABLE_NAME,
@@ -556,7 +540,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FILL_WITH_PRICE: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FillEntry.TABLE_NAME,
@@ -568,7 +551,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FILL_WITH_LITERS: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FillEntry.TABLE_NAME,
@@ -580,7 +562,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FILL_WITH_LAT: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FillEntry.TABLE_NAME,
@@ -592,7 +573,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FILL_WITH_LNG: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FillEntry.TABLE_NAME,
@@ -604,7 +584,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case FILL_WITH_DATASYNC: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.FillEntry.TABLE_NAME,
@@ -613,6 +592,16 @@ public class FillItProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
+                        sortOrder);
+                break;
+            }
+
+            case FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL: {
+                retCursor = getFillJoinGasStationJoinVehicleJoinFuel(
+                        uri,
+                        projection,
+                        selection,
+                        selectionArgs,
                         sortOrder);
                 break;
             }
@@ -647,7 +636,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case GASSTATION_WITH_LAT: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.GasStationEntry.TABLE_NAME,
@@ -659,7 +647,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case GASSTATION_WITH_LNG: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.GasStationEntry.TABLE_NAME,
@@ -671,7 +658,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case GASSTATION_WITH_FLAG: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.GasStationEntry.TABLE_NAME,
@@ -683,7 +669,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case GASSTATION_WITH_ADDRESS: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.GasStationEntry.TABLE_NAME,
@@ -695,7 +680,6 @@ public class FillItProvider extends ContentProvider {
                         sortOrder);
                 break;
             }
-
             case GASSTATION_WITH_DATASYNC: {
                 retCursor = mOpenHelper.getReadableDatabase().query(
                         FillItContract.GasStationEntry.TABLE_NAME,
@@ -704,6 +688,16 @@ public class FillItProvider extends ContentProvider {
                         selectionArgs,
                         null,
                         null,
+                        sortOrder);
+                break;
+            }
+
+            case GASSTATION_JOIN_FLAG: {
+                retCursor = getGasStationJoinFlag(
+                        uri,
+                        projection,
+                        selection,
+                        selectionArgs,
                         sortOrder);
                 break;
             }
@@ -933,3 +927,4 @@ public class FillItProvider extends ContentProvider {
     }
 
 }
+

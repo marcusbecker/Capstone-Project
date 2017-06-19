@@ -176,7 +176,7 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
         final Uri fuelUri = FillItContract.FuelEntry.CONTENT_URI;
         final Cursor cursor = getContext().getContentResolver().query(fuelUri, null, null, null, null);
         mFuels = ModelBuilder.buildFuelList(cursor);
-        mFuels.add(0, new FuelModel(0, "Combustível padrão", 0));
+        mFuels.add(0, new FuelModel(0, getString(R.string.fuel_default), 0));
 
         int selected = 0;
         CharSequence[] fuelArray = new String[mFuels.size()];

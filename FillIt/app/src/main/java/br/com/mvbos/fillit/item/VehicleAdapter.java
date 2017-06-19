@@ -76,18 +76,17 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
 
         String photo = mCursor.getString(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_PHOTO));
         String name = mCursor.getString(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_NAME));
-        long fuel = mCursor.getLong(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_FUEL));
-        //Date dataSync = mCursor.getDate(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_DATASYNC));
+        //long fuel = mCursor.getLong(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_FUEL));
+        String fuelName = mCursor.getString(mCursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_NAME));
 
         if (!photo.isEmpty()) {
             final Bitmap imageBitmap = BitmapFactory.decodeFile(new File(mPath, photo).getAbsolutePath());
             holder.mImageViewPhoto.setImageBitmap(FileUtil.roundBitmap(imageBitmap));
         }
 
-
         holder.mTextViewName.setText(name);
-        //holder.mTextViewFuel.setText(fuel);
-        //holder.mTextViewDataSync.setText(dataSync);
+        holder.mTextViewFuel.setText(fuelName);
+
         //holder.mTextViewName.setOnClickListener(mOnClickItem);
     }
 

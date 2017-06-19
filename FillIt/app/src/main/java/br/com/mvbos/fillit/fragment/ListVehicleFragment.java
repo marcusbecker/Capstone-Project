@@ -36,12 +36,12 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     private String mParam2;
 
 
-    private String[] mProjection = {
-            FillItContract.VehicleEntry._ID,
+    private final String[] mProjection = {
+            FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry._ID,
             FillItContract.VehicleEntry.COLUMN_NAME_PHOTO,
             FillItContract.VehicleEntry.COLUMN_NAME_NAME,
-            FillItContract.VehicleEntry.COLUMN_NAME_FUEL,
-            FillItContract.VehicleEntry.COLUMN_NAME_DATASYNC
+            FillItContract.FuelEntry.COLUMN_NAME_NAME,
+            FillItContract.VehicleEntry.COLUMN_NAME_FUEL
     };
 
     private String mSelectionClause = ""; //FillItContract.VehicleEntry._ID + " = ?"
@@ -134,8 +134,14 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
 
         switch (id) {
             case ID_VEHICLE_LOADER:
+
+                final Uri uri = FillItContract.BASE_CONTENT_URI
+                        .buildUpon()
+                        .appendPath(FillItContract.PATH_VEHICLE_JOIN_FUEL)
+                        .build();
+
                 return new CursorLoader(getActivity(),
-                        FillItContract.VehicleEntry.CONTENT_URI,
+                        uri,
                         mProjection,
                         mSelectionClause,
                         mSelectionArgs,
