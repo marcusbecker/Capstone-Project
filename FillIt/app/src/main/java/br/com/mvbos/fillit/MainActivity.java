@@ -16,6 +16,7 @@ import br.com.mvbos.fillit.fragment.ListVehicleFragment;
 import br.com.mvbos.fillit.fragment.NewVehicleFragment;
 import br.com.mvbos.fillit.fragment.OnFragmentInteractionListener;
 import br.com.mvbos.fillit.model.VehicleModel;
+import br.com.mvbos.fillit.sync.DataSyncStarter;
 import br.com.mvbos.fillit.util.ModelBuilder;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DataSyncStarter.scheduleTask(this);
 
         setContentView(R.layout.activity_main);
 
@@ -38,11 +40,9 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         mMatcher.addURI(authority, FillItContract.PATH_VEHICLE, VEHICLE);
         mMatcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_ID);
 
-
         if (savedInstanceState != null) {
             mContent = getSupportFragmentManager().getFragment(savedInstanceState, CURRENT_FRAGMENT);
         }
-
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             //finish();

@@ -52,6 +52,15 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
+        <service
+            android:name=".sync.DataSyncJobService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.firebase.jobdispatcher.ACTION_EXECUTE" />
+            </intent-filter>
+
+        </service>
+
     </application>
 
 </manifest>
