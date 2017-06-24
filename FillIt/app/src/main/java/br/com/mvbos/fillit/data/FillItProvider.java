@@ -179,10 +179,10 @@ public class FillItProvider extends ContentProvider {
 
         matcher.addURI(authority, FillItContract.PATH_VEHICLE, VEHICLE);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_ID);
-        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/*", VEHICLE_WITH_PHOTO);
-        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/*", VEHICLE_WITH_NAME);
-        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_FUEL);
-        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/photo/*", VEHICLE_WITH_PHOTO);
+        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/name/*", VEHICLE_WITH_NAME);
+        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/fuel/#", VEHICLE_WITH_FUEL);
+        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/sync/#", VEHICLE_WITH_DATASYNC);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE_JOIN_FUEL + "/", VEHICLE_JOIN_FUEL);
 
         matcher.addURI(authority, FillItContract.PATH_FILL, FILL);
@@ -842,6 +842,7 @@ public class FillItProvider extends ContentProvider {
         switch (match) {
             case FUEL:
                 db.beginTransaction();
+                db.execSQL("DELETE FROM " + FillItContract.FuelEntry.TABLE_NAME);
                 try {
                     for (ContentValues value : values) {
                         long _id = db.insert(FillItContract.FuelEntry.TABLE_NAME, null, value);

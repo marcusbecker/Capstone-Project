@@ -79,7 +79,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
         //long fuel = mCursor.getLong(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_FUEL));
         String fuelName = mCursor.getString(mCursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_NAME));
 
-        if (!photo.isEmpty()) {
+        if (photo != null && !photo.isEmpty()) {
             final Bitmap imageBitmap = BitmapFactory.decodeFile(new File(mPath, photo).getAbsolutePath());
             holder.mImageViewPhoto.setImageBitmap(FileUtil.roundBitmap(imageBitmap));
         }

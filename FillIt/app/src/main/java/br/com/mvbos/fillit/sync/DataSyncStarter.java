@@ -21,7 +21,7 @@ public class DataSyncStarter {
 
     private static final String DATA_SYNC_TAG = "dtSynTag";
     private static final int INTERVAL_RUNNER = (int) TimeUnit.HOURS.toMillis(3);
-    private static final int INTERVAL_SECONDS = (int) TimeUnit.MINUTES.toMillis(1);
+    private static final int INTERVAL_MINUTES = (int) TimeUnit.MINUTES.toMillis(1);
     private static boolean initializes;
 
 
@@ -39,7 +39,7 @@ public class DataSyncStarter {
                 .setConstraints(Constraint.ON_ANY_NETWORK)
                 .setLifetime(Lifetime.FOREVER)
                 .setRecurring(true)
-                .setTrigger(Trigger.executionWindow(INTERVAL_RUNNER, INTERVAL_RUNNER + INTERVAL_SECONDS))
+                .setTrigger(Trigger.executionWindow(INTERVAL_RUNNER, INTERVAL_RUNNER + INTERVAL_MINUTES))
                 .setReplaceCurrent(true);
 
         dispatcher.schedule(job.build());

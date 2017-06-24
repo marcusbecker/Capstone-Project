@@ -183,12 +183,12 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
 
         for (int i = 0; i < mFuels.size(); i++) {
             fuelArray[i] = mFuels.get(i).getName();
-            if (mFuels.get(i).getId() == mVehicle.getId()) {
+            if (mFuels.get(i).getId() == mVehicle.getFuel()) {
                 selected = i;
             }
         }
 
-        ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, fuelArray);
+        final ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, fuelArray);
         mFuel.setAdapter(spinnerAdapter);
         mFuel.setSelection(selected);
         mFuel.setOnItemSelectedListener(this);
@@ -232,7 +232,8 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
                 final ContentResolver resolver = view.getContext().getContentResolver();
                 ContentValues mVehicleValues = new ContentValues();
 
-                mVehicle.setFuel(0);
+                final long fuelId = mFuels.get(mFuel.getSelectedItemPosition()).getId();
+                mVehicle.setFuel(fuelId);
                 mVehicle.setName(mName.getText().toString());
 
                 mVehicleValues.put(FillItContract.VehicleEntry.COLUMN_NAME_PHOTO, mVehicle.getPhoto());

@@ -11,11 +11,24 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
-    <Button
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="addVehicle"
-        android:text="Add vehicle" />
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="addVehicle"
+            android:text="Add vehicle" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="sync"
+            android:text="Sync" />
+
+    </LinearLayout>
 
 
 </LinearLayout>

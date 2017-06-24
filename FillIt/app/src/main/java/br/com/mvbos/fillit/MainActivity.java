@@ -1,6 +1,7 @@
 package br.com.mvbos.fillit;
 
 
+import android.content.Intent;
 import android.content.UriMatcher;
 import android.content.res.Configuration;
 import android.database.Cursor;
@@ -16,6 +17,7 @@ import br.com.mvbos.fillit.fragment.ListVehicleFragment;
 import br.com.mvbos.fillit.fragment.NewVehicleFragment;
 import br.com.mvbos.fillit.fragment.OnFragmentInteractionListener;
 import br.com.mvbos.fillit.model.VehicleModel;
+import br.com.mvbos.fillit.sync.DataSyncService;
 import br.com.mvbos.fillit.sync.DataSyncStarter;
 import br.com.mvbos.fillit.util.ModelBuilder;
 
@@ -111,5 +113,10 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
             mContent.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
 
+    }
+
+    public void sync(View view) {
+        Intent intent = new Intent(this, DataSyncService.class);
+        startService(intent);
     }
 }
