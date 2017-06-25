@@ -9,13 +9,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import br.com.mvbos.fillit.data.FillItContract;
+import br.com.mvbos.fillit.fragment.ListFillFragment;
 import br.com.mvbos.fillit.fragment.ListVehicleFragment;
 import br.com.mvbos.fillit.fragment.NewVehicleFragment;
 import br.com.mvbos.fillit.fragment.OnFragmentInteractionListener;
+import br.com.mvbos.fillit.fragment.MainCollectionPagerAdapter;
 import br.com.mvbos.fillit.model.VehicleModel;
 import br.com.mvbos.fillit.sync.DataSyncService;
 import br.com.mvbos.fillit.sync.DataSyncStarter;
@@ -31,8 +34,38 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private static final int VEHICLE_WITH_ID = 301;
 
 
+    private MainCollectionPagerAdapter mCollectionPagerAdapter;
+    private ViewPager mViewPager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        DataSyncStarter.scheduleTask(this);
+
+        final String authority = FillItContract.CONTENT_AUTHORITY;
+        mMatcher.addURI(authority, FillItContract.PATH_VEHICLE, VEHICLE);
+        mMatcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_ID);
+
+        setContentView(R.layout.activity_main);
+
+        final Fragment[] frags = new Fragment[]{
+                ListFillFragment.newInstance("", ""),
+                ListVehicleFragment.newInstance("", "")};
+        final String[] titles = new String[]{
+                getString(R.string.label_tab_one),
+                getString(R.string.label_tab_two)};
+
+        mCollectionPagerAdapter = new MainCollectionPagerAdapter(
+                getSupportFragmentManager(),
+                frags,
+                titles);
+
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager.setAdapter(mCollectionPagerAdapter);
+
+    }
+
+    protected void _onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         DataSyncStarter.scheduleTask(this);
 
@@ -58,7 +91,6 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         }
 
         startFragment();
-
     }
 
     @Override

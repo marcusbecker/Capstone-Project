@@ -168,44 +168,44 @@ public class FillItProvider extends ContentProvider {
         final String authority = FillItContract.CONTENT_AUTHORITY;
         matcher.addURI(authority, FillItContract.PATH_FUEL, FUEL);
         matcher.addURI(authority, FillItContract.PATH_FUEL + "/#", FUEL_WITH_ID);
-        matcher.addURI(authority, FillItContract.PATH_FUEL + "/*", FUEL_WITH_NAME);
-        matcher.addURI(authority, FillItContract.PATH_FUEL + "/#", FUEL_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_FUEL + "/name/*", FUEL_WITH_NAME);
+        matcher.addURI(authority, FillItContract.PATH_FUEL + "/datasync/#", FUEL_WITH_DATASYNC);
 
         matcher.addURI(authority, FillItContract.PATH_FLAG, FLAG);
         matcher.addURI(authority, FillItContract.PATH_FLAG + "/#", FLAG_WITH_ID);
-        matcher.addURI(authority, FillItContract.PATH_FLAG + "/*", FLAG_WITH_NAME);
-        matcher.addURI(authority, FillItContract.PATH_FLAG + "/*", FLAG_WITH_ICON);
-        matcher.addURI(authority, FillItContract.PATH_FLAG + "/#", FLAG_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_FLAG + "/name/*", FLAG_WITH_NAME);
+        matcher.addURI(authority, FillItContract.PATH_FLAG + "/icon/*", FLAG_WITH_ICON);
+        matcher.addURI(authority, FillItContract.PATH_FLAG + "/datasync/#", FLAG_WITH_DATASYNC);
 
         matcher.addURI(authority, FillItContract.PATH_VEHICLE, VEHICLE);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/#", VEHICLE_WITH_ID);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/photo/*", VEHICLE_WITH_PHOTO);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/name/*", VEHICLE_WITH_NAME);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/fuel/#", VEHICLE_WITH_FUEL);
-        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/sync/#", VEHICLE_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_VEHICLE + "/datasync/#", VEHICLE_WITH_DATASYNC);
         matcher.addURI(authority, FillItContract.PATH_VEHICLE_JOIN_FUEL + "/", VEHICLE_JOIN_FUEL);
 
         matcher.addURI(authority, FillItContract.PATH_FILL, FILL);
         matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_ID);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_GASSTATION);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_VEHICLE);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_FUEL);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_DATE);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_PRICE);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_LITERS);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_LAT);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_LNG);
-        matcher.addURI(authority, FillItContract.PATH_FILL + "/#", FILL_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/gasstation/#", FILL_WITH_GASSTATION);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/vehicle/#", FILL_WITH_VEHICLE);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/fuel/#", FILL_WITH_FUEL);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/date/#", FILL_WITH_DATE);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/price/#", FILL_WITH_PRICE);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/liters/#", FILL_WITH_LITERS);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/lat/#", FILL_WITH_LAT);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/lng/#", FILL_WITH_LNG);
+        matcher.addURI(authority, FillItContract.PATH_FILL + "/datasync/#", FILL_WITH_DATASYNC);
         matcher.addURI(authority, FillItContract.PATH_FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL + "/", FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL);
 
         matcher.addURI(authority, FillItContract.PATH_GASSTATION, GASSTATION);
         matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_ID);
-        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/*", GASSTATION_WITH_NAME);
-        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_LAT);
-        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_LNG);
-        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_FLAG);
-        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/*", GASSTATION_WITH_ADDRESS);
-        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/#", GASSTATION_WITH_DATASYNC);
+        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/name/*", GASSTATION_WITH_NAME);
+        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/lat/#", GASSTATION_WITH_LAT);
+        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/lng/#", GASSTATION_WITH_LNG);
+        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/flag/#", GASSTATION_WITH_FLAG);
+        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/address/*", GASSTATION_WITH_ADDRESS);
+        matcher.addURI(authority, FillItContract.PATH_GASSTATION + "/datasync/#", GASSTATION_WITH_DATASYNC);
         matcher.addURI(authority, FillItContract.PATH_GASSTATION_JOIN_FLAG + "/", GASSTATION_JOIN_FLAG);
 
         return matcher;

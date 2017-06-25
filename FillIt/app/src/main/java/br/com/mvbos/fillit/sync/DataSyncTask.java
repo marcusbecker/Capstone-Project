@@ -3,7 +3,6 @@ package br.com.mvbos.fillit.sync;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,35 +46,67 @@ public class DataSyncTask {
     public static void executeTask(Context context, String action) {
 
         if (ACTION_SYNC.equals(action)) {
-            final String url = context.getString(R.string.sync_url);
-            final ContentResolver resolver = context.getContentResolver();
+            if (false) {
+                final String url = context.getString(R.string.url_sync);
+                final ContentResolver resolver = context.getContentResolver();
 
-            try {
-                final String resp = post(url, "");
-                final JSONObject jObject = new JSONObject(resp);
-                final JSONArray fuel = jObject.getJSONArray("Fuel");
-                final long dataSync = Calendar.getInstance().getTimeInMillis();
+                try {
+                    final String resp = post(url, "");
+                    final JSONObject jObject = new JSONObject(resp);
+                    final JSONArray fuel = jObject.getJSONArray("Fuel");
+                    final long dataSync = Calendar.getInstance().getTimeInMillis();
 
-                ContentValues[] values = new ContentValues[fuel.length()];
+                    ContentValues[] values = new ContentValues[fuel.length()];
 
-                for (int i = 0; i < fuel.length(); i++) {
-                    values[i] = new ContentValues();
-                    final String name = fuel.getJSONObject(i).getString("name");
+                    for (int i = 0; i < fuel.length(); i++) {
+                        values[i] = new ContentValues();
+                        final String name = fuel.getJSONObject(i).getString("name");
 
-                    values[i].put(FillItContract.FuelEntry._ID, i + 1);
-                    values[i].put(FillItContract.FuelEntry.COLUMN_NAME_NAME, name);
-                    values[i].put(FillItContract.FuelEntry.COLUMN_NAME_DATASYNC, dataSync);
+                        values[i].put(FillItContract.FuelEntry._ID, i + 1);
+                        values[i].put(FillItContract.FuelEntry.COLUMN_NAME_NAME, name);
+                        values[i].put(FillItContract.FuelEntry.COLUMN_NAME_DATASYNC, dataSync);
+                    }
+
+                    resolver.bulkInsert(FillItContract.FuelEntry.CONTENT_URI, values);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
-                resolver.bulkInsert(FillItContract.FuelEntry.CONTENT_URI, values);
+            } else {
+                final String url = context.getString(R.string.url_flags);
+                final ContentResolver resolver = context.getContentResolver();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
+                try {
+                    final String resp = post(url, "");
+                    final JSONObject jObject = new JSONObject(resp);
+                    final JSONArray fuel = jObject.getJSONArray("Flag");
+                    final long dataSync = Calendar.getInstance().getTimeInMillis();
+
+                    ContentValues[] values = new ContentValues[fuel.length()];
+
+                    for (int i = 0; i < fuel.length(); i++) {
+                        values[i] = new ContentValues();
+                        final int id = fuel.getJSONObject(i).getInt("id");
+                        final String icon = fuel.getJSONObject(i).getString("icon");
+                        final String name = fuel.getJSONObject(i).getString("name");
+
+                        values[i].put(FillItContract.FlagEntry._ID, id);
+                        values[i].put(FillItContract.FlagEntry.COLUMN_NAME_NAME, name);
+                        values[i].put(FillItContract.FlagEntry.COLUMN_NAME_ICON, icon);
+                        values[i].put(FillItContract.FlagEntry.COLUMN_NAME_DATASYNC, dataSync);
+                    }
+
+                    resolver.bulkInsert(FillItContract.FuelEntry.CONTENT_URI, values);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-
-            System.out.println("it is time!");
         }
     }
 
