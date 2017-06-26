@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.mvbos.fillit.data.FillItContract;
+import br.com.mvbos.fillit.model.FillModel;
 import br.com.mvbos.fillit.model.FuelModel;
 import br.com.mvbos.fillit.model.VehicleModel;
 
@@ -74,7 +75,7 @@ public class ModelBuilder {
         cursor.close();
         return list;
     }
-/*
+
     public static FillModel buildFill(Cursor query) {
         FillModel v = new FillModel(0);
         if (query.moveToFirst()) {
@@ -82,12 +83,12 @@ public class ModelBuilder {
             v.setGasstation(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_GASSTATION)));
             v.setVehicle(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_VEHICLE)));
             v.setFuel(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_FUEL)));
-            v.setDate(query.getDate(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATE)));
+            v.setDate(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATE)));
             v.setPrice(query.getDouble(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_PRICE)));
             v.setLiters(query.getInt(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LITERS)));
             v.setLat(query.getDouble(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LAT)));
             v.setLng(query.getDouble(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LNG)));
-            v.setDataSync(query.getDate(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATASYNC)));
+            v.setDataSync(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATASYNC)));
 
             query.close();
             return v;
@@ -96,6 +97,7 @@ public class ModelBuilder {
         return null;
     }
 
+    /*
     public static GasStationModel buildGasStation(Cursor query) {
         GasStationModel v = new GasStationModel(0);
         if (query.moveToFirst()) {

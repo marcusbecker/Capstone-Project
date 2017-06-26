@@ -36,18 +36,6 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     private String mParam2;
 
 
-    private final String[] mProjection = {
-            FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry._ID,
-            FillItContract.VehicleEntry.COLUMN_NAME_PHOTO,
-            FillItContract.VehicleEntry.COLUMN_NAME_NAME,
-            FillItContract.FuelEntry.COLUMN_NAME_NAME,
-            FillItContract.VehicleEntry.COLUMN_NAME_FUEL
-    };
-
-    private String mSelectionClause = ""; //FillItContract.VehicleEntry._ID + " = ?"
-    private String[] mSelectionArgs = {};
-    private String mSortOrder = null;
-
     private RecyclerView mRecyclerView;
 
     private OnFragmentInteractionListener mListener;
@@ -134,6 +122,18 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
 
         switch (id) {
             case ID_VEHICLE_LOADER:
+                final String[] mProjection = {
+                        FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry._ID,
+                        FillItContract.VehicleEntry.COLUMN_NAME_PHOTO,
+                        FillItContract.VehicleEntry.COLUMN_NAME_NAME,
+                        FillItContract.FuelEntry.COLUMN_NAME_NAME,
+                        FillItContract.VehicleEntry.COLUMN_NAME_FUEL
+                };
+
+                final String mSelectionClause = ""; //FillItContract.VehicleEntry._ID + " = ?"
+                final String[] mSelectionArgs = {};
+                final String mSortOrder = null;
+
 
                 final Uri uri = FillItContract.BASE_CONTENT_URI
                         .buildUpon()
