@@ -58,7 +58,7 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
     private String mCurrentPhotoPath;
 
     private File mStorageDir;
-    private List<FuelModel> mFuels;
+    private List<FuelModel> mFuelsList;
 
 
     public NewVehicleFragment() {
@@ -151,7 +151,7 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
         super.onSaveInstanceState(outState);
 
         mVehicle.setName(mName.getText().toString());
-        mVehicle.setFuel(mFuels.get(mFuel.getSelectedItemPosition()).getId());
+        mVehicle.setFuel(mFuelsList.get(mFuel.getSelectedItemPosition()).getId());
         //outState.putParcelable(ARG_PARAM_ID, mVehicle);
         outState.putString(ARG_PARAM_PATH, mCurrentPhotoPath);
     }
@@ -175,15 +175,15 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
 
         final Uri fuelUri = FillItContract.FuelEntry.CONTENT_URI;
         final Cursor cursor = getContext().getContentResolver().query(fuelUri, null, null, null, null);
-        mFuels = ModelBuilder.buildFuelList(cursor);
-        mFuels.add(0, new FuelModel(0, getString(R.string.fuel_default), 0));
+        mFuelsList = ModelBuilder.buildFuelList(cursor);
+        mFuelsList.add(0, new FuelModel(0, getString(R.string.fuel_default), 0));
 
         int selected = 0;
-        CharSequence[] fuelArray = new String[mFuels.size()];
+        CharSequence[] fuelArray = new String[mFuelsList.size()];
 
-        for (int i = 0; i < mFuels.size(); i++) {
-            fuelArray[i] = mFuels.get(i).getName();
-            if (mFuels.get(i).getId() == mVehicle.getFuel()) {
+        for (int i = 0; i < mFuelsList.size(); i++) {
+            fuelArray[i] = mFuelsList.get(i).getName();
+            if (mFuelsList.get(i).getId() == mVehicle.getFuel()) {
                 selected = i;
             }
         }
@@ -232,7 +232,7 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
                 final ContentResolver resolver = view.getContext().getContentResolver();
                 ContentValues mVehicleValues = new ContentValues();
 
-                final long fuelId = mFuels.get(mFuel.getSelectedItemPosition()).getId();
+                final long fuelId = mFuelsList.get(mFuel.getSelectedItemPosition()).getId();
                 mVehicle.setFuel(fuelId);
                 mVehicle.setName(mName.getText().toString());
 
@@ -310,7 +310,7 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long id) {
-        mVehicle.setFuel(mFuels.get(pos).getId());
+        mVehicle.setFuel(mFuelsList.get(pos).getId());
     }
 
     @Override

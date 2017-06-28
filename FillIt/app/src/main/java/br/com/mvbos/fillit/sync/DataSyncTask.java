@@ -44,9 +44,9 @@ public class DataSyncTask {
     }
 
     public static void executeTask(Context context, String action) {
-
+        short load = 1;
         if (ACTION_SYNC.equals(action)) {
-            if (false) {
+            if (load == 0) {
                 final String url = context.getString(R.string.url_sync);
                 final ContentResolver resolver = context.getContentResolver();
 
@@ -75,23 +75,23 @@ public class DataSyncTask {
                     e.printStackTrace();
                 }
 
-            } else {
+            } else if (load == 1) {
                 final String url = context.getString(R.string.url_flags);
                 final ContentResolver resolver = context.getContentResolver();
 
                 try {
                     final String resp = post(url, "");
                     final JSONObject jObject = new JSONObject(resp);
-                    final JSONArray fuel = jObject.getJSONArray("Flag");
+                    final JSONArray flag = jObject.getJSONArray("Flag");
                     final long dataSync = Calendar.getInstance().getTimeInMillis();
 
-                    ContentValues[] values = new ContentValues[fuel.length()];
+                    ContentValues[] values = new ContentValues[flag.length()];
 
-                    for (int i = 0; i < fuel.length(); i++) {
+                    for (int i = 0; i < flag.length(); i++) {
                         values[i] = new ContentValues();
-                        final int id = fuel.getJSONObject(i).getInt("id");
-                        final String icon = fuel.getJSONObject(i).getString("icon");
-                        final String name = fuel.getJSONObject(i).getString("name");
+                        final int id = flag.getJSONObject(i).getInt("id");
+                        final String icon = flag.getJSONObject(i).getString("icon");
+                        final String name = flag.getJSONObject(i).getString("name");
 
                         values[i].put(FillItContract.FlagEntry._ID, id);
                         values[i].put(FillItContract.FlagEntry.COLUMN_NAME_NAME, name);
@@ -99,7 +99,7 @@ public class DataSyncTask {
                         values[i].put(FillItContract.FlagEntry.COLUMN_NAME_DATASYNC, dataSync);
                     }
 
-                    resolver.bulkInsert(FillItContract.FuelEntry.CONTENT_URI, values);
+                    resolver.bulkInsert(FillItContract.FlagEntry.CONTENT_URI, values);
 
                 } catch (IOException e) {
                     e.printStackTrace();

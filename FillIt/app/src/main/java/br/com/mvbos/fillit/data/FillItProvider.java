@@ -225,7 +225,7 @@ public class FillItProvider extends ContentProvider {
             case FUEL_WITH_DATASYNC:
                 return FillItContract.FuelEntry.CONTENT_ITEM_TYPE;
 
-            // Flag
+            // FlagModel
             case FLAG:
                 return FillItContract.FlagEntry.CONTENT_TYPE;
             case FLAG_WITH_ID:

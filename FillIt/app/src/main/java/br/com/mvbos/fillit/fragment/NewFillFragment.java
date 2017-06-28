@@ -3,28 +3,36 @@ package br.com.mvbos.fillit.fragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import java.util.Calendar;
 
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
+import br.com.mvbos.fillit.item.FlagSpinnerAdapter;
 import br.com.mvbos.fillit.model.FillModel;
+import br.com.mvbos.fillit.model.FlagModel;
 import br.com.mvbos.fillit.util.Converter;
+import br.com.mvbos.fillit.util.ModelBuilder;
 
 public class NewFillFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
 
     private FillModel mFill;
-    private EditText mGasstation;
+    private Spinner mGasStation;
     private EditText mVehicle;
     private EditText mFuel;
     private EditText mDate;
@@ -33,6 +41,7 @@ public class NewFillFragment extends Fragment {
 
 
     private OnFragmentInteractionListener mListener;
+    private FlagModel[] mFlagsList;
 
     public NewFillFragment() {
         // Required empty public constructor
@@ -66,12 +75,31 @@ public class NewFillFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mGasstation = (EditText) view.findViewById(R.id.etGasstation);
+        mGasStation = (Spinner) view.findViewById(R.id.spGasStation);
         mVehicle = (EditText) view.findViewById(R.id.etVehicle);
         mFuel = (EditText) view.findViewById(R.id.etFuel);
         mDate = (EditText) view.findViewById(R.id.etDate);
         mPrice = (EditText) view.findViewById(R.id.etPrice);
         mLiters = (EditText) view.findViewById(R.id.etLiters);
+
+
+        final Uri uri = FillItContract.FlagEntry.CONTENT_URI;
+        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        mFlagsList = ModelBuilder.buildFlagList(cursor);
+
+        SpinnerAdapter adapter = new FlagSpinnerAdapter(getContext(), mFlagsList);
+        mGasStation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(NewFillFragment.class.getSimpleName(), String.format("position %d, id %d ", position, id));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
+            }
+        });
+        mGasStation.setAdapter(adapter);
 
 
         view.findViewById(R.id.btnAdd).setOnClickListener(new View.OnClickListener() {

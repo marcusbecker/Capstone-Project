@@ -7,6 +7,7 @@ import java.util.List;
 
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.model.FillModel;
+import br.com.mvbos.fillit.model.FlagModel;
 import br.com.mvbos.fillit.model.FuelModel;
 import br.com.mvbos.fillit.model.VehicleModel;
 
@@ -29,14 +30,14 @@ public class ModelBuilder {
 
         return null;
     }
-
+*/
     public static FlagModel buildFlag(Cursor query) {
         FlagModel v = new FlagModel(0);
         if (query.moveToFirst()) {
             v.setId(query.getLong(query.getColumnIndex(FillItContract.FlagEntry._ID)));
             v.setName(query.getString(query.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME)));
             v.setIcon(query.getString(query.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_ICON)));
-            v.setDataSync(query.getDate(query.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_DATASYNC)));
+            v.setDataSync(query.getLong(query.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_DATASYNC)));
 
             query.close();
             return v;
@@ -44,7 +45,7 @@ public class ModelBuilder {
 
         return null;
     }
-*/
+
     public static VehicleModel buildVehicle(Cursor query) {
         VehicleModel v = null;
         if (query.moveToFirst()) {
@@ -61,8 +62,26 @@ public class ModelBuilder {
         return v;
     }
 
+    public static FlagModel[] buildFlagList(Cursor cursor) {
+        FlagModel[] list = new FlagModel[cursor.getCount()];
+
+        short i = 0;
+        while (cursor.moveToNext()) {
+            FlagModel f = new FlagModel(0);
+            f.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.FlagEntry._ID)));
+            f.setName(cursor.getString(cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME)));
+            f.setIcon(cursor.getString(cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_ICON)));
+            f.setDataSync(cursor.getLong(cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_DATASYNC)));
+
+            list[i++] = f;
+        }
+
+        cursor.close();
+        return list;
+    }
+
     public static List<FuelModel> buildFuelList(Cursor cursor) {
-        List<FuelModel> list = new ArrayList<>(cursor.getColumnCount());
+        List<FuelModel> list = new ArrayList<>(cursor.getCount());
         while (cursor.moveToNext()) {
             FuelModel v = new FuelModel();
             v.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.FuelEntry._ID)));
