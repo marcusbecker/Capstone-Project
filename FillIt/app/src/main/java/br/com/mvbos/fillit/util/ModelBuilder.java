@@ -99,7 +99,7 @@ public class ModelBuilder {
         FillModel v = new FillModel(0);
         if (query.moveToFirst()) {
             v.setId(query.getLong(query.getColumnIndex(FillItContract.FillEntry._ID)));
-            v.setGasstation(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_GASSTATION)));
+            v.setGasStation(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_GASSTATION)));
             v.setVehicle(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_VEHICLE)));
             v.setFuel(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_FUEL)));
             v.setDate(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATE)));

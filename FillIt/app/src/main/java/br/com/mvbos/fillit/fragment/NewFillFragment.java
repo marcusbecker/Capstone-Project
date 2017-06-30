@@ -109,13 +109,13 @@ public class NewFillFragment extends Fragment {
                 final ContentResolver resolver = view.getContext().getContentResolver();
                 ContentValues mFillValues = new ContentValues();
 
-                mFill.setGasstation(0);
+                mFill.setGasStation(0);
                 mFill.setVehicle(1);
                 mFill.setFuel(1);
                 mFill.setPrice(Converter.toFloat(mPrice, 0f));
                 mFill.setLiters(Math.round(Converter.toFloat(mLiters, 0f)));
 
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_GASSTATION, mFill.getGasstation());
+                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_GASSTATION, mFill.getGasStation());
                 mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_VEHICLE, mFill.getVehicle());
                 mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_FUEL, mFill.getFuel());
 

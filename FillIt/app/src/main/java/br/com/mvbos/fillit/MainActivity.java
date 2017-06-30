@@ -13,6 +13,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import java.util.Locale;
+
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.fragment.ListFillFragment;
 import br.com.mvbos.fillit.fragment.ListVehicleFragment;
@@ -24,6 +26,7 @@ import br.com.mvbos.fillit.model.FillModel;
 import br.com.mvbos.fillit.model.VehicleModel;
 import br.com.mvbos.fillit.sync.DataSyncService;
 import br.com.mvbos.fillit.sync.DataSyncStarter;
+import br.com.mvbos.fillit.util.Converter;
 import br.com.mvbos.fillit.util.ModelBuilder;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {

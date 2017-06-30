@@ -10,7 +10,7 @@
         android:id="@+id/spGasStation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="gasstation"></Spinner>
+        android:hint="gasStation"></Spinner>
 
     <EditText
         android:id="@+id/etVehicle"

@@ -10,7 +10,7 @@ import android.os.Parcelable;
 public class FillModel implements Parcelable {
 
     private long id;
-    private long gasstation;
+    private long gasStation;
     private long vehicle;
     private long fuel;
     private long date;
@@ -24,9 +24,9 @@ public class FillModel implements Parcelable {
         this.id = id;
     }
 
-    public FillModel(long id, long gasstation, long vehicle, long fuel, long date, double price, int liters, double lat, double lng, long dataSync) {
+    public FillModel(long id, long gasStation, long vehicle, long fuel, long date, double price, int liters, double lat, double lng, long dataSync) {
         this.id = id;
-        this.gasstation = gasstation;
+        this.gasStation = gasStation;
         this.vehicle = vehicle;
         this.fuel = fuel;
         this.date = date;
@@ -39,7 +39,7 @@ public class FillModel implements Parcelable {
 
     public FillModel(Parcel in) {
         this.id = in.readLong();
-        this.gasstation = in.readLong();
+        this.gasStation = in.readLong();
         this.vehicle = in.readLong();
         this.fuel = in.readLong();
         this.date = in.readLong();
@@ -58,7 +58,7 @@ public class FillModel implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.id);
-        dest.writeLong(this.gasstation);
+        dest.writeLong(this.gasStation);
         dest.writeLong(this.vehicle);
         dest.writeLong(this.fuel);
         dest.writeLong(this.date);
@@ -88,12 +88,12 @@ public class FillModel implements Parcelable {
         this.id = id;
     }
 
-    public long getGasstation() {
-        return gasstation;
+    public long getGasStation() {
+        return gasStation;
     }
 
-    public void setGasstation(long gasstation) {
-        this.gasstation = gasstation;
+    public void setGasStation(long gasStation) {
+        this.gasStation = gasStation;
     }
 
     public long getVehicle() {
@@ -180,7 +180,7 @@ public class FillModel implements Parcelable {
     public String toString() {
         return "FillModel{" +
                 "id=" + id +
-                ", gasstation=" + gasstation +
+                ", gasStation=" + gasStation +
                 ", vehicle=" + vehicle +
                 ", fuel=" + fuel +
                 ", date=" + date +

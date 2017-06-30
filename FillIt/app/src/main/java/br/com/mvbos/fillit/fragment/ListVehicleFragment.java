@@ -126,8 +126,8 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
                         FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry._ID,
                         FillItContract.VehicleEntry.COLUMN_NAME_PHOTO,
                         FillItContract.VehicleEntry.COLUMN_NAME_NAME,
-                        FillItContract.FuelEntry.COLUMN_NAME_NAME,
-                        FillItContract.VehicleEntry.COLUMN_NAME_FUEL
+                        FillItContract.VehicleEntry.COLUMN_NAME_FUEL,
+                        FillItContract.FuelEntry.COLUMN_NAME_NAME
                 };
 
                 final String mSelectionClause = ""; //FillItContract.VehicleEntry._ID + " = ?"
