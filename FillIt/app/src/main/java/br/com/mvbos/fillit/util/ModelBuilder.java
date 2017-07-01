@@ -2,9 +2,6 @@ package br.com.mvbos.fillit.util;
 
 import android.database.Cursor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.model.FillModel;
 import br.com.mvbos.fillit.model.FlagModel;
@@ -62,6 +59,25 @@ public class ModelBuilder {
         return v;
     }
 
+    public static VehicleModel[] buildVehicleList(Cursor query) {
+        VehicleModel[] list = new VehicleModel[query.getCount()];
+
+        short i = 0;
+        while (query.moveToNext()) {
+            VehicleModel v = new VehicleModel(0);
+            v.setId(query.getLong(query.getColumnIndex(FillItContract.VehicleEntry._ID)));
+            v.setPhoto(query.getString(query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_PHOTO)));
+            v.setName(query.getString(query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_NAME)));
+            v.setFuel(query.getLong(query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_FUEL)));
+            v.setDataSync(query.getLong(query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_DATASYNC)));
+
+            list[i++] = v;
+        }
+
+        query.close();
+        return list;
+    }
+
     public static FlagModel[] buildFlagList(Cursor cursor) {
         FlagModel[] list = new FlagModel[cursor.getCount()];
 
@@ -80,15 +96,17 @@ public class ModelBuilder {
         return list;
     }
 
-    public static List<FuelModel> buildFuelList(Cursor cursor) {
-        List<FuelModel> list = new ArrayList<>(cursor.getCount());
+    public static FuelModel[] buildFuelList(Cursor cursor) {
+        FuelModel[] list = new FuelModel[cursor.getCount()];
+
+        short i = 0;
         while (cursor.moveToNext()) {
             FuelModel v = new FuelModel();
             v.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.FuelEntry._ID)));
             v.setName(cursor.getString(cursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_NAME)));
             v.setDataSync(cursor.getLong(cursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_DATASYNC)));
 
-            list.add(v);
+            list[i++] = v;
         }
 
         cursor.close();

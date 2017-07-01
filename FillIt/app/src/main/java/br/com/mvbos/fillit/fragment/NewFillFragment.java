@@ -18,6 +18,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
@@ -31,44 +33,58 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.item.FlagSpinnerAdapter;
+import br.com.mvbos.fillit.item.VehicleSpinnerAdapter;
 import br.com.mvbos.fillit.model.FillModel;
 import br.com.mvbos.fillit.model.FlagModel;
+import br.com.mvbos.fillit.model.FuelModel;
 import br.com.mvbos.fillit.model.GasStationModel;
+import br.com.mvbos.fillit.model.VehicleModel;
 import br.com.mvbos.fillit.util.Converter;
 import br.com.mvbos.fillit.util.ModelBuilder;
 
 public class NewFillFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
     private static final String ARG_PARAM1 = "param1";
+    private static final int MAP_UPDATE_LOCATION_CHANGE = 0;
+    private static final int MAP_UPDATE_MAP_READY = 1;
 
     private GoogleMap mMap;
     private LocationRequest mLocation;
     private GoogleApiClient mClient;
+
+    private Marker mLastMarker;
     private Location mLastLocation;
 
     private FillModel mFill;
     private Spinner mGasStation;
-    private EditText mVehicle;
-    private EditText mFuel;
-    private EditText mDate;
+    private Spinner mVehicle;
+    private Spinner mFuel;
+    private Button mDate;
     private EditText mPrice;
     private EditText mLiters;
 
 
     private OnFragmentInteractionListener mListener;
+    private FuelModel[] mFuelList;
     private FlagModel[] mFlagsList;
+    private VehicleModel[] mVehicleList;
 
     public NewFillFragment() {
         // Required empty public constructor
@@ -89,6 +105,20 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
         if (getArguments() != null) {
             mFill = getArguments().getParcelable(ARG_PARAM1);
         }
+
+        mClient = new GoogleApiClient.Builder(getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .enableAutoManage(getActivity(), this)
+                .build();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mClient.stopAutoManage(getActivity());
+        mClient.disconnect();
     }
 
     @Override
@@ -103,38 +133,25 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
         super.onViewCreated(view, savedInstanceState);
 
         mGasStation = (Spinner) view.findViewById(R.id.spGasStation);
-        mVehicle = (EditText) view.findViewById(R.id.etVehicle);
-        mFuel = (EditText) view.findViewById(R.id.etFuel);
-        mDate = (EditText) view.findViewById(R.id.etDate);
+        mVehicle = (Spinner) view.findViewById(R.id.spVehicle);
+        mFuel = (Spinner) view.findViewById(R.id.spFuel);
+        mDate = (Button) view.findViewById(R.id.btnDate);
         mPrice = (EditText) view.findViewById(R.id.etPrice);
         mLiters = (EditText) view.findViewById(R.id.etLiters);
 
-        mClient = new GoogleApiClient.Builder(getContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .enableAutoManage(getActivity(), this)
-                .build();
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
 
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);
+        }
 
-        final Uri uri = FillItContract.FlagEntry.CONTENT_URI;
-        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
-        mFlagsList = ModelBuilder.buildFlagList(cursor);
+        setFlagSpinner();
 
-        SpinnerAdapter adapter = new FlagSpinnerAdapter(getContext(), mFlagsList);
-        mGasStation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(NewFillFragment.class.getSimpleName(), String.format("position %d, id %d ", position, id));
-            }
+        setVehicleSpinner();
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
-            }
-        });
-        mGasStation.setAdapter(adapter);
+        setFuelSpinner();
 
+        mDate.setText(SimpleDateFormat.getDateInstance().format(new Date()));
 
         view.findViewById(R.id.btnAdd).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -191,6 +208,72 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
 
     }
 
+    private void setFuelSpinner() {
+        final Uri uri = FillItContract.FuelEntry.CONTENT_URI;
+        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        mFuelList = ModelBuilder.buildFuelList(cursor);
+
+        ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
+                getContext(), android.R.layout.simple_spinner_item);
+
+        for (FuelModel m : mFuelList) {
+            adapter.add(m.getName());
+        }
+
+        mFuel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(NewFillFragment.class.getSimpleName(), String.format("position %d, id %d ", position, id));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
+            }
+        });
+        mFuel.setAdapter(adapter);
+    }
+
+    private void setVehicleSpinner() {
+        final Uri uri = FillItContract.VehicleEntry.CONTENT_URI;
+        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        mVehicleList = ModelBuilder.buildVehicleList(cursor);
+
+        SpinnerAdapter adapter = new VehicleSpinnerAdapter(getContext(), mVehicleList);
+        mVehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(NewFillFragment.class.getSimpleName(), String.format("position %d, id %d ", position, id));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
+            }
+        });
+        mVehicle.setAdapter(adapter);
+    }
+
+    private void setFlagSpinner() {
+        final Uri uri = FillItContract.FlagEntry.CONTENT_URI;
+        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        mFlagsList = ModelBuilder.buildFlagList(cursor);
+
+        SpinnerAdapter adapter = new FlagSpinnerAdapter(getContext(), mFlagsList);
+        mGasStation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Log.i(NewFillFragment.class.getSimpleName(), String.format("position %d, id %d ", position, id));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
+            }
+        });
+        mGasStation.setAdapter(adapter);
+    }
+
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
             mListener.onFragmentInteraction(uri);
@@ -237,7 +320,7 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
         }
 
         if (mLastLocation != null) {
-            updateMapLocation();
+            updateMapLocation(MAP_UPDATE_MAP_READY);
 
         } else if (marker != null) {
             CameraPosition cp = CameraPosition.builder()
@@ -255,8 +338,7 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
     public void onConnected(@Nullable Bundle bundle) {
         mLocation = LocationRequest.create();
         mLocation.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocation.setInterval(1000);
-
+        mLocation.setInterval(TimeUnit.MINUTES.toMillis(1));
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -282,21 +364,27 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
     public void onLocationChanged(Location location) {
         mLastLocation = location;
         if (mMap != null) {
-            updateMapLocation();
+            updateMapLocation(MAP_UPDATE_LOCATION_CHANGE);
         }
     }
 
-    private void updateMapLocation() {
-        MarkerOptions marker = new MarkerOptions()
-                .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
-                .title(getString(R.string.current_location));
+    private void updateMapLocation(int event) {
 
-        mMap.addMarker(marker);
+        if (mLastMarker == null) {
+            MarkerOptions markerOption = new MarkerOptions()
+                    .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                    .title(getString(R.string.current_location));
+
+            mLastMarker = mMap.addMarker(markerOption);
+
+        } else {
+            mLastMarker.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+        }
 
 
         CameraPosition cp = CameraPosition.builder()
-                .target(marker.getPosition())
-                .zoom(15f)
+                .target(mLastMarker.getPosition())
+                .zoom(16f)
                 .bearing(0f)
                 .tilt(45f)
                 .build();

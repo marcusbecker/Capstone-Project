@@ -33,6 +33,8 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import br.com.mvbos.fillit.R;
@@ -175,8 +177,9 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
 
         final Uri fuelUri = FillItContract.FuelEntry.CONTENT_URI;
         final Cursor cursor = getContext().getContentResolver().query(fuelUri, null, null, null, null);
-        mFuelsList = ModelBuilder.buildFuelList(cursor);
-        mFuelsList.add(0, new FuelModel(0, getString(R.string.fuel_default), 0));
+        mFuelsList = new ArrayList<>(cursor.getCount() + 1);
+        mFuelsList.add(new FuelModel(0, getString(R.string.fuel_default), 0));
+        mFuelsList.addAll(Arrays.asList(ModelBuilder.buildFuelList(cursor)));
 
         int selected = 0;
         CharSequence[] fuelArray = new String[mFuelsList.size()];
