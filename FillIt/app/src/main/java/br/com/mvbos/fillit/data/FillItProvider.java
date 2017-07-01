@@ -279,7 +279,7 @@ public class FillItProvider extends ContentProvider {
             case FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL:
                 return FillItContract.FillEntry.CONTENT_TYPE;
 
-            // GasStation
+            // GasStationModel
             case GASSTATION:
                 return FillItContract.GasStationEntry.CONTENT_TYPE;
             case GASSTATION_WITH_ID:

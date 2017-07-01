@@ -68,7 +68,7 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setHasFixedSize(true);
 
-        mAdapter = new FillAdapter(null, this);
+        mAdapter = new FillAdapter(getResources(), null, this);
         mAdapter.setPath(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES));
 
         mRecyclerView.setAdapter(mAdapter);

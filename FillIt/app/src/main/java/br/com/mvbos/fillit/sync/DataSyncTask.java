@@ -44,7 +44,7 @@ public class DataSyncTask {
     }
 
     public static void executeTask(Context context, String action) {
-        short load = 1;
+        short load = 0;
         if (ACTION_SYNC.equals(action)) {
             if (load == 0) {
                 final String url = context.getString(R.string.url_sync);

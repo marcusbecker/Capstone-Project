@@ -30,15 +30,6 @@
 
 
     <TextView
-        android:id="@+id/tvFuel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/tvPrice"
-        android:layout_alignBottom="@+id/tvPrice"
-        android:layout_toEndOf="@+id/tvPrice"
-        android:hint="fuel" />
-
-    <TextView
         android:id="@+id/tvDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,21 +39,12 @@
         android:hint="date" />
 
     <TextView
-        android:id="@+id/tvPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/tvLiters"
-        android:layout_alignBottom="@+id/tvLiters"
-        android:layout_toEndOf="@+id/tvLiters"
-        android:hint="price" />
-
-    <TextView
         android:id="@+id/tvLiters"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:hint="liters"
         android:layout_below="@+id/tvGasstation"
-        android:layout_toEndOf="@+id/ivPhoto"
-        android:hint="liters" />
+        android:layout_toEndOf="@+id/ivPhoto" />
 
 
 </RelativeLayout>

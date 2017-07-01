@@ -1,6 +1,9 @@
 package br.com.mvbos.fillit.item;
 
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,12 +13,13 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
-import br.com.mvbos.fillit.util.Converter;
+import br.com.mvbos.fillit.util.FileUtil;
 
 /**
  * Created by Marcus Becker on 15/06/2017.
@@ -23,27 +27,28 @@ import br.com.mvbos.fillit.util.Converter;
 
 public class FillAdapter extends RecyclerView.Adapter<FillAdapter.ViewHolder> {
 
+    private Resources mResources;
     private Cursor mCursor;
     private File mPath;
     private View.OnClickListener mOnClickItem;
 
     private final DateFormat dateFormat;
+    private final NumberFormat numberFormat;
 
-    public FillAdapter(Cursor cursor, View.OnClickListener clickItem) {
+    public FillAdapter(Resources rec, Cursor cursor, View.OnClickListener clickItem) {
+        this.mResources = rec;
         this.mCursor = cursor;
         this.mOnClickItem = clickItem;
         dateFormat = SimpleDateFormat.getDateInstance();
+        numberFormat = NumberFormat.getCurrencyInstance();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView mImageViewPhoto;
-        public TextView mTextViewFuel;
 
         public TextView mGasStation;
         public TextView mVehicle;
-        public TextView mFuel;
         public TextView mDate;
-        public TextView mPrice;
         public TextView mLiters;
         public TextView mLat;
         public TextView mLng;
@@ -51,13 +56,9 @@ public class FillAdapter extends RecyclerView.Adapter<FillAdapter.ViewHolder> {
         public ViewHolder(View view) {
             super(view);
             mImageViewPhoto = (ImageView) view.findViewById(R.id.ivPhoto);
-            mTextViewFuel = (TextView) view.findViewById(R.id.tvFuel);
-
             mGasStation = (TextView) view.findViewById(R.id.tvGasstation);
             mVehicle = (TextView) view.findViewById(R.id.tvVehicle);
-            mFuel = (TextView) view.findViewById(R.id.tvFuel);
             mDate = (TextView) view.findViewById(R.id.tvDate);
-            mPrice = (TextView) view.findViewById(R.id.tvPrice);
             mLiters = (TextView) view.findViewById(R.id.tvLiters);
             //mLat = (TextView) view.findViewById(R.id.tvLat);
             //mLng = (TextView) view.findViewById(R.id.tvLng);
@@ -95,6 +96,7 @@ public class FillAdapter extends RecyclerView.Adapter<FillAdapter.ViewHolder> {
         String gasStation = mCursor.getString(mCursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_NAME));
 
         //long vehicle = mCursor.getLong(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_VEHICLE));
+        String photo = mCursor.getString(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_PHOTO));
         String vehicle = mCursor.getString(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_NAME));
 
         //long fuel = mCursor.getLong(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_FUEL));
@@ -106,15 +108,26 @@ public class FillAdapter extends RecyclerView.Adapter<FillAdapter.ViewHolder> {
         double lat = mCursor.getDouble(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LAT));
         double lng = mCursor.getDouble(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LNG));
 
-        holder.mGasStation.setText(String.valueOf(gasStation));
+        if (gasStation == null) {
+            holder.mGasStation.setText(mResources.getString(R.string.no_gas_station));
+        } else {
+            holder.mGasStation.setText(gasStation);
+        }
+
+        String t = mResources.getString(R.string.format_litter_fuel_price);
+
         holder.mVehicle.setText(String.valueOf(vehicle));
-        holder.mTextViewFuel.setText(String.valueOf(fuel));
         holder.mDate.setText(dateFormat.format(new Date(date)));
-        holder.mPrice.setText(String.valueOf(price));
-        holder.mLiters.setText(String.valueOf(liters));
+        holder.mLiters.setText(String.format(t, liters, fuel, numberFormat.format(price)));
 
         //holder.mLat.setText(String.valueOf(lat));
         //holder.mLng.setText(String.valueOf(lng));
+
+
+        if (photo != null && !photo.isEmpty()) {
+            final Bitmap imageBitmap = BitmapFactory.decodeFile(new File(mPath, photo).getAbsolutePath());
+            holder.mImageViewPhoto.setImageBitmap(FileUtil.roundBitmap(imageBitmap));
+        }
 
     }
 

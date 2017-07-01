@@ -1,60 +1,71 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".fragment.NewFillFragment">
 
-
-    <Spinner
-        android:id="@+id/spGasStation"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="gasStation"></Spinner>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/etVehicle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="vehicle"
-        android:inputType="text" />
+        <fragment
+            android:id="@+id/mapFragment"
+            class="com.google.android.gms.maps.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="280dp" />
 
-    <EditText
-        android:id="@+id/etFuel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="fuel"
-        android:inputType="numberDecimal" />
+        <Spinner
+            android:id="@+id/spGasStation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="gasStation"></Spinner>
 
-    <EditText
-        android:id="@+id/etDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="date"
-        android:inputType="date" />
+        <EditText
+            android:id="@+id/etVehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="vehicle"
+            android:inputType="text" />
 
-    <EditText
-        android:id="@+id/etPrice"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="price"
-        android:inputType="numberDecimal" />
+        <EditText
+            android:id="@+id/etFuel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="fuel"
+            android:inputType="numberDecimal" />
 
-    <EditText
-        android:id="@+id/etLiters"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="liters"
-        android:inputType="numberDecimal" />
+        <EditText
+            android:id="@+id/etDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="date"
+            android:inputType="date" />
 
-    <Button
-        android:id="@+id/btnAdd"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Add" />
+        <EditText
+            android:id="@+id/etPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="price"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/etLiters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="liters"
+            android:inputType="numberDecimal" />
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add" />
 
 
-</LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
