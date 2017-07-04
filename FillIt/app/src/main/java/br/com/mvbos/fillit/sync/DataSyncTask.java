@@ -75,7 +75,9 @@ public class DataSyncTask {
                     e.printStackTrace();
                 }
 
-            } else if (load == 1) {
+            }
+
+            if (load == 1) {
                 final String url = context.getString(R.string.url_flags);
                 final ContentResolver resolver = context.getContentResolver();
 

@@ -336,12 +336,13 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        mLocation = LocationRequest.create();
-        mLocation.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocation.setInterval(TimeUnit.MINUTES.toMillis(1));
 
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            mLocation = LocationRequest.create();
+            mLocation.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            mLocation.setInterval(TimeUnit.MINUTES.toMillis(1));
 
             LocationServices.FusedLocationApi.requestLocationUpdates(mClient, mLocation, this);
 
