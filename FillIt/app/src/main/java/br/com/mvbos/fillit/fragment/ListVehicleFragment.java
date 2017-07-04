@@ -24,7 +24,7 @@ import br.com.mvbos.fillit.item.VehicleAdapter;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ListVehicleFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class ListVehicleFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, MainCollectionPagerAdapter.DataChangeListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -172,5 +172,12 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
 
         c.moveToPosition(itemPosition);
         onButtonPressed(FillItContract.VehicleEntry.buildVehicleUri(c.getLong(ci)));
+    }
+
+    @Override
+    public void updateData() {
+        if (isAdded()) {
+            getLoaderManager().restartLoader(ID_VEHICLE_LOADER, null, this);
+        }
     }
 }

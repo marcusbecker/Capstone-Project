@@ -20,7 +20,7 @@ import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.item.FillAdapter;
 
-public class ListFillFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class ListFillFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, MainCollectionPagerAdapter.DataChangeListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int ID_FILL_LOADER = 101;
@@ -164,5 +164,13 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
 
         c.moveToPosition(itemPosition);
         onButtonPressed(FillItContract.FillEntry.buildFillUri(c.getLong(ci)));
+    }
+
+    @Override
+    public void updateData() {
+        if (isAdded()) {
+            getLoaderManager().restartLoader(ID_FILL_LOADER, null, this);
+        }
+
     }
 }

@@ -45,6 +45,8 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".DetailActivity"></activity>
+
         <provider
             android:name=".data.FillItProvider"
             android:authorities="@string/content_authority"

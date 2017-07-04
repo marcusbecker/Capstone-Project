@@ -318,6 +318,5 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-
     }
 }

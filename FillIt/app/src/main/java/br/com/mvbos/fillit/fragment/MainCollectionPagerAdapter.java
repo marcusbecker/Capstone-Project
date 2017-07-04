@@ -11,6 +11,11 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class MainCollectionPagerAdapter extends FragmentStatePagerAdapter implements OnFragmentInteractionListener {
 
+    public interface DataChangeListener {
+        void updateData();
+
+    }
+
 
     private final Fragment[] frags;
     private final String[] titles;
@@ -23,11 +28,6 @@ public class MainCollectionPagerAdapter extends FragmentStatePagerAdapter implem
 
     @Override
     public Fragment getItem(int i) {
-        //Bundle args = new Bundle();
-        // Our object is just an integer :-P
-        //args.putInt(DemoObjectFragment.ARG_OBJECT, i + 1);
-        //fragment.setArguments(args);
-
         return frags[i];
     }
 
@@ -43,6 +43,15 @@ public class MainCollectionPagerAdapter extends FragmentStatePagerAdapter implem
 
     @Override
     public void onFragmentInteraction(Uri uri) {
+    }
 
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        for (Fragment f : frags) {
+            if (f instanceof DataChangeListener) {
+                ((DataChangeListener) f).updateData();
+            }
+        }
     }
 }
