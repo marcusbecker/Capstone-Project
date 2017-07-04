@@ -64,6 +64,7 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
     private static final String ARG_PARAM1 = "param1";
     private static final int MAP_UPDATE_LOCATION_CHANGE = 0;
     private static final int MAP_UPDATE_MAP_READY = 1;
+    private static final int PERMISSIONS_REQUEST_LOCATION = 5;
 
     private GoogleMap mMap;
     private LocationRequest mLocation;
@@ -347,9 +348,11 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
             LocationServices.FusedLocationApi.requestLocationUpdates(mClient, mLocation, this);
 
         } else {
-            Toast.makeText(getContext(), "permission denied", Toast.LENGTH_SHORT).show();
+            String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+            ActivityCompat.requestPermissions(getActivity(), permissions, PERMISSIONS_REQUEST_LOCATION);
         }
     }
+
 
     @Override
     public void onConnectionSuspended(int i) {
@@ -359,6 +362,23 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions,
+                                           int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSIONS_REQUEST_LOCATION: {
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onConnected(null);
+                } else {
+                    Log.d("", "permission denied");
+                }
+
+                return;
+            }
+        }
     }
 
     @Override
