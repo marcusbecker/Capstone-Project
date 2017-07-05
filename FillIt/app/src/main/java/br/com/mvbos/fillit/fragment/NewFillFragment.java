@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.location.Location;
@@ -17,7 +18,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,10 +26,16 @@ import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.AutocompleteFilter;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,12 +45,15 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -60,18 +69,28 @@ import br.com.mvbos.fillit.model.VehicleModel;
 import br.com.mvbos.fillit.util.Converter;
 import br.com.mvbos.fillit.util.ModelBuilder;
 
-public class NewFillFragment extends Fragment implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
+import static com.google.android.gms.internal.zzt.TAG;
+
+public class NewFillFragment extends Fragment implements OnMapReadyCallback,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+
     private static final String ARG_PARAM1 = "param1";
-    private static final int MAP_UPDATE_LOCATION_CHANGE = 0;
-    private static final int MAP_UPDATE_MAP_READY = 1;
+    private static final int MAP_UPDATE_LOCATION_CHANGE = 3;
+    private static final int MAP_UPDATE_MAP_READY = 5;
+    private static final int MAP_UPDATE_PLACE_PICKER = 7;
+
     private static final int PERMISSIONS_REQUEST_LOCATION = 5;
+
+    private static final int PLACE_PICKER_REQUEST = 101;
 
     private GoogleMap mMap;
     private LocationRequest mLocation;
     private GoogleApiClient mClient;
 
     private Marker mLastMarker;
-    private Location mLastLocation;
+    private LatLng mLastLocation;
 
     private FillModel mFill;
     private Spinner mGasStation;
@@ -80,6 +99,7 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
     private Button mDate;
     private EditText mPrice;
     private EditText mLiters;
+    private EditText mTotal;
 
 
     private OnFragmentInteractionListener mListener;
@@ -88,7 +108,6 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
     private VehicleModel[] mVehicleList;
 
     public NewFillFragment() {
-        // Required empty public constructor
     }
 
     public static NewFillFragment newInstance(final FillModel fillModel) {
@@ -107,19 +126,29 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
             mFill = getArguments().getParcelable(ARG_PARAM1);
         }
 
-        mClient = new GoogleApiClient.Builder(getContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .enableAutoManage(getActivity(), this)
-                .build();
+        if (mFill.getId() > 0) {
+            if (mFill.hasLatLng()) {
+                mLastLocation = new LatLng(mFill.getLat(), mFill.getLng());
+            }
+
+        } else {
+            mClient = new GoogleApiClient.Builder(getContext())
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .enableAutoManage(getActivity(), this)
+                    .build();
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mClient.stopAutoManage(getActivity());
-        mClient.disconnect();
+
+        if (mClient != null) {
+            mClient.stopAutoManage(getActivity());
+            mClient.disconnect();
+        }
     }
 
     @Override
@@ -136,9 +165,12 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
         mGasStation = (Spinner) view.findViewById(R.id.spGasStation);
         mVehicle = (Spinner) view.findViewById(R.id.spVehicle);
         mFuel = (Spinner) view.findViewById(R.id.spFuel);
+
         mDate = (Button) view.findViewById(R.id.btnDate);
         mPrice = (EditText) view.findViewById(R.id.etPrice);
         mLiters = (EditText) view.findViewById(R.id.etLiters);
+        mTotal = (EditText) view.findViewById(R.id.etTotal);
+
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
 
@@ -152,61 +184,114 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
 
         setFuelSpinner();
 
-        mDate.setText(SimpleDateFormat.getDateInstance().format(new Date()));
+        Date fillDate;
+        if (mFill.getId() > 0) {
+            final NumberFormat df = DecimalFormat.getInstance();
+            fillDate = new Date(mFill.getDate());
+
+            mPrice.setText(df.format(mFill.getPrice()));
+            mLiters.setText(df.format(mFill.getLiters()));
+            mTotal.setText(df.format(mFill.getLiters() * mFill.getPrice()));
+
+        } else {
+            fillDate = new Date();
+        }
+
+        mDate.setText(SimpleDateFormat.getDateInstance().format(fillDate));
+
+        final View mapButton = view.findViewById(R.id.mapFloatButton);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pickPlace(view);
+            }
+        });
 
         view.findViewById(R.id.btnAdd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                boolean success;
-                final ContentResolver resolver = view.getContext().getContentResolver();
-                ContentValues mFillValues = new ContentValues();
-
-                mFill.setGasStation(0);
-                mFill.setVehicle(1);
-                mFill.setFuel(1);
-                mFill.setPrice(Converter.toFloat(mPrice, 0f));
-                mFill.setLiters(Math.round(Converter.toFloat(mLiters, 0f)));
-
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_GASSTATION, mFill.getGasStation());
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_VEHICLE, mFill.getVehicle());
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_FUEL, mFill.getFuel());
-
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_PRICE, mFill.getPrice());
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LITERS, mFill.getLiters());
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LAT, mFill.getLat());
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LNG, mFill.getLng());
-                mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_DATE, Calendar.getInstance().getTimeInMillis());
-
-
-                if (mFill.getId() > 0) {
-                    int res = resolver.update(
-                            FillItContract.FillEntry.CONTENT_URI,
-                            mFillValues,
-                            FillItContract.FillEntry._ID + "=?",
-                            new String[]{String.valueOf(mFill.getId())}
-                    );
-
-                    //mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_DATASYNC, "");
-
-                    success = res > 0;
-
-                } else {
-                    Uri fillUri = resolver.insert(
-                            FillItContract.FillEntry.CONTENT_URI,
-                            mFillValues
-                    );
-
-                    success = fillUri != null;
-                }
-
-                if (success) {
-                    onButtonPressed(FillItContract.FillEntry.CONTENT_URI);
-                } else {
-                    Toast.makeText(getContext(), "Data base error", Toast.LENGTH_LONG).show();
-                }
+                persist(view);
             }
         });
 
+    }
+
+    private void pickPlace(View view) {
+        try {
+
+            AutocompleteFilter typeFilter = new AutocompleteFilter.Builder()
+                    .setTypeFilter(AutocompleteFilter.TYPE_FILTER_ADDRESS)
+                    .setCountry(Locale.getDefault().getCountry())
+                    .build();
+
+            Intent intent =
+                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .setFilter(typeFilter)
+                            .build(getActivity());
+
+
+            startActivityForResult(intent, PLACE_PICKER_REQUEST);
+
+
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void persist(View view) {
+        boolean success;
+        final ContentResolver resolver = view.getContext().getContentResolver();
+
+        mFill.setGasStation(0);
+        mFill.setVehicle(mVehicleList[mVehicle.getSelectedItemPosition()].getId());
+        mFill.setFuel(mFuelList[mFuel.getSelectedItemPosition()].getId());
+        mFill.setPrice(Converter.toFloat(mPrice, 0f));
+        mFill.setLiters(Math.round(Converter.toFloat(mLiters, 0f)));
+
+        if (mLastLocation != null) {
+            mFill.setLat(mLastLocation.latitude);
+            mFill.setLng(mLastLocation.longitude);
+        }
+
+        ContentValues mFillValues = new ContentValues();
+
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_GASSTATION, mFill.getGasStation());
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_VEHICLE, mFill.getVehicle());
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_FUEL, mFill.getFuel());
+
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_PRICE, mFill.getPrice());
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LITERS, mFill.getLiters());
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LAT, mFill.getLat());
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LNG, mFill.getLng());
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_DATE, Calendar.getInstance().getTimeInMillis());
+
+
+        if (mFill.getId() > 0) {
+            int res = resolver.update(
+                    FillItContract.FillEntry.CONTENT_URI,
+                    mFillValues,
+                    FillItContract.FillEntry._ID + "=?",
+                    new String[]{String.valueOf(mFill.getId())}
+            );
+
+            success = res > 0;
+
+        } else {
+            Uri fillUri = resolver.insert(
+                    FillItContract.FillEntry.CONTENT_URI,
+                    mFillValues
+            );
+
+            success = fillUri != null;
+        }
+
+        if (success) {
+            onButtonPressed(FillItContract.FillEntry.CONTENT_URI);
+        } else {
+            Toast.makeText(getContext(), "Data base error", Toast.LENGTH_LONG).show();
+        }
     }
 
     private void setFuelSpinner() {
@@ -220,19 +305,8 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
         for (FuelModel m : mFuelList) {
             adapter.add(m.getName());
         }
-
-        mFuel.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(NewFillFragment.class.getSimpleName(), String.format("position %d, id %d ", position, id));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
-            }
-        });
         mFuel.setAdapter(adapter);
+        mFuel.setSelection((int) mFill.getFuel());
     }
 
     private void setVehicleSpinner() {
@@ -241,18 +315,8 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
         mVehicleList = ModelBuilder.buildVehicleList(cursor);
 
         SpinnerAdapter adapter = new VehicleSpinnerAdapter(getContext(), mVehicleList);
-        mVehicle.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(NewFillFragment.class.getSimpleName(), String.format("position %d, id %d ", position, id));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
-            }
-        });
         mVehicle.setAdapter(adapter);
+        mVehicle.setSelection((int) mFill.getVehicle());
     }
 
     private void setFlagSpinner() {
@@ -261,18 +325,8 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
         mFlagsList = ModelBuilder.buildFlagList(cursor);
 
         SpinnerAdapter adapter = new FlagSpinnerAdapter(getContext(), mFlagsList);
-        mGasStation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Log.i(NewFillFragment.class.getSimpleName(), String.format("position %d, id %d ", position, id));
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
-            }
-        });
         mGasStation.setAdapter(adapter);
+        mGasStation.setSelection((int) mFill.getGasStation());
     }
 
     public void onButtonPressed(Uri uri) {
@@ -356,12 +410,10 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
 
     @Override
     public void onConnectionSuspended(int i) {
-
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 
     @Override
@@ -383,9 +435,29 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
+        mLastLocation = new LatLng(location.getLatitude(), location.getLongitude());
         if (mMap != null) {
             updateMapLocation(MAP_UPDATE_LOCATION_CHANGE);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getContext(), data);
+
+                mLastLocation = place.getLatLng();
+                updateMapLocation(MAP_UPDATE_PLACE_PICKER);
+
+                Log.i(TAG, "Place: " + place.getName());
+
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Status status = PlaceAutocomplete.getStatus(getContext(), data);
+                Log.i(TAG, status.getStatusMessage());
+
+            } else if (resultCode == RESULT_CANCELED) {
+            }
         }
     }
 
@@ -393,13 +465,13 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback, Goo
 
         if (mLastMarker == null) {
             MarkerOptions markerOption = new MarkerOptions()
-                    .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                    .position(mLastLocation)
                     .title(getString(R.string.current_location));
 
             mLastMarker = mMap.addMarker(markerOption);
 
         } else {
-            mLastMarker.setPosition(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()));
+            mLastMarker.setPosition(mLastLocation);
         }
 
 

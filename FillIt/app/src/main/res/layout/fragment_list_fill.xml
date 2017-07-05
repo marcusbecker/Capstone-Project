@@ -24,7 +24,7 @@
         android:layout_gravity="bottom|right|end"
         android:layout_margin="16dp"
         android:onClick="addFill"
-        android:src="@drawable/ic_create_white_24dp"
+        android:src="@mipmap/ic_fill_center"
         app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -191,4 +191,8 @@ public class FillModel implements Parcelable {
                 ", dataSync=" + dataSync +
                 '}';
     }
+
+    public boolean hasLatLng() {
+        return lat != 0 && lng != 0;
+    }
 }

@@ -20,7 +20,7 @@
         android:layout_gravity="bottom|right|end"
         android:layout_margin="16dp"
         android:onClick="addVehicle"
-        android:src="@drawable/ic_create_white_24dp"
+        android:src="@mipmap/ic_car_center"
         app:fabSize="normal" />
 
 </android.support.design.widget.CoordinatorLayout>
