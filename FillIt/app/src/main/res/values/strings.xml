@@ -16,5 +16,6 @@
     <string name="format_litter_fuel_price">%1$d litters of %2$s for %3$s</string>
     <string name="current_location">Você está aqui</string>
     <string name="label_sync_data">Sync</string>
+    <string name="label_new_gas_station">New Gas Station</string>
 
 </resources>

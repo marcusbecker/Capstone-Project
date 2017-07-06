@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -59,10 +62,9 @@ import java.util.concurrent.TimeUnit;
 
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
-import br.com.mvbos.fillit.item.FlagSpinnerAdapter;
+import br.com.mvbos.fillit.item.GasStationSpinnerAdapter;
 import br.com.mvbos.fillit.item.VehicleSpinnerAdapter;
 import br.com.mvbos.fillit.model.FillModel;
-import br.com.mvbos.fillit.model.FlagModel;
 import br.com.mvbos.fillit.model.FuelModel;
 import br.com.mvbos.fillit.model.GasStationModel;
 import br.com.mvbos.fillit.model.VehicleModel;
@@ -73,8 +75,11 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static com.google.android.gms.internal.zzt.TAG;
 
-public class NewFillFragment extends Fragment implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
+public class NewFillFragment extends Fragment implements
+        GasStationDialogFragment.DialogEditListener,
+        OnMapReadyCallback,
+        LocationListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String ARG_PARAM1 = "param1";
     private static final int MAP_UPDATE_LOCATION_CHANGE = 3;
@@ -104,7 +109,7 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback,
 
     private OnFragmentInteractionListener mListener;
     private FuelModel[] mFuelList;
-    private FlagModel[] mFlagsList;
+    private GasStationModel[] mGasList;
     private VehicleModel[] mVehicleList;
 
     public NewFillFragment() {
@@ -178,7 +183,7 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback,
             mapFragment.getMapAsync(this);
         }
 
-        setFlagSpinner();
+        setGasStationSpinner();
 
         setVehicleSpinner();
 
@@ -211,6 +216,16 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback,
             @Override
             public void onClick(View view) {
                 persist(view);
+            }
+        });
+
+        view.findViewById(R.id.btnAddGasStation).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                GasStationDialogFragment newGasStation = GasStationDialogFragment.newInstance(mFill);
+                newGasStation.show(fm, "fragment_new_gas");
+                newGasStation.setListener(NewFillFragment.this);
             }
         });
 
@@ -319,12 +334,16 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback,
         mVehicle.setSelection((int) mFill.getVehicle());
     }
 
-    private void setFlagSpinner() {
-        final Uri uri = FillItContract.FlagEntry.CONTENT_URI;
-        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
-        mFlagsList = ModelBuilder.buildFlagList(cursor);
+    private void setGasStationSpinner() {
+        final Uri uri = FillItContract.BASE_CONTENT_URI
+                .buildUpon()
+                .appendPath(FillItContract.PATH_GASSTATION_JOIN_FLAG)
+                .build();
 
-        SpinnerAdapter adapter = new FlagSpinnerAdapter(getContext(), mFlagsList);
+        final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        mGasList = ModelBuilder.buildGasStationList(cursor);
+
+        SpinnerAdapter adapter = new GasStationSpinnerAdapter(getContext(), mGasList);
         mGasStation.setAdapter(adapter);
         mGasStation.setSelection((int) mFill.getGasStation());
     }
@@ -483,5 +502,17 @@ public class NewFillFragment extends Fragment implements OnMapReadyCallback,
                 .build();
 
         mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cp));
+    }
+
+    @Override
+    public void onFinishEditDialog(GasStationModel gas) {
+        List<GasStationModel> temp = new ArrayList<>(mGasList.length + 1);
+        temp.add(gas);
+        temp.addAll(Arrays.asList(mGasList));
+        mGasList = temp.toArray(new GasStationModel[0]);
+
+        SpinnerAdapter adapter = new GasStationSpinnerAdapter(getContext(), mGasList);
+        mGasStation.setAdapter(adapter);
+        mGasStation.setSelection((int) mFill.getGasStation());
     }
 }

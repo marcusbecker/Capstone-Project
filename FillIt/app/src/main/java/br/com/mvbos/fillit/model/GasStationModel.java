@@ -10,11 +10,19 @@ import android.os.Parcelable;
 public class GasStationModel implements Parcelable {
     private long id;
     private String name;
+    private String address;
+
     private double lat;
     private double lng;
-    private int flag;
-    private String address;
     private long dataSync;
+
+    private int flag;
+    private String flagName;
+    private String flagIcon;
+
+    public GasStationModel(long id) {
+        this.id = id;
+    }
 
     public GasStationModel(long id, String name, double lat, double lng, int flag, String address, long dataSync) {
         this.id = id;
@@ -34,6 +42,9 @@ public class GasStationModel implements Parcelable {
         this.flag = in.readInt();
         this.address = in.readString();
         this.dataSync = in.readLong();
+
+        this.flagName = in.readString();
+        this.flagIcon = in.readString();
     }
 
     @Override
@@ -50,6 +61,9 @@ public class GasStationModel implements Parcelable {
         dest.writeInt(this.flag);
         dest.writeString(this.address);
         dest.writeLong(this.dataSync);
+
+        dest.writeString(this.flagName);
+        dest.writeString(this.flagIcon);
     }
 
     public static final Parcelable.Creator<GasStationModel> CREATOR = new Parcelable.Creator<GasStationModel>() {
@@ -116,6 +130,22 @@ public class GasStationModel implements Parcelable {
 
     public void setDataSync(long dataSync) {
         this.dataSync = dataSync;
+    }
+
+    public String getFlagName() {
+        return flagName;
+    }
+
+    public void setFlagName(String flagName) {
+        this.flagName = flagName;
+    }
+
+    public String getFlagIcon() {
+        return flagIcon;
+    }
+
+    public void setFlagIcon(String flagIcon) {
+        this.flagIcon = flagIcon;
     }
 
     @Override

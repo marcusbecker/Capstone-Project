@@ -141,7 +141,6 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
                 mSelectionClause,
                 mSelectionArgs,
                 mSortOrder);
-
     }
 
     @Override

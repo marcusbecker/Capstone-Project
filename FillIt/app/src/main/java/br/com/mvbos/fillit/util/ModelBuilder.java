@@ -6,6 +6,7 @@ import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.model.FillModel;
 import br.com.mvbos.fillit.model.FlagModel;
 import br.com.mvbos.fillit.model.FuelModel;
+import br.com.mvbos.fillit.model.GasStationModel;
 import br.com.mvbos.fillit.model.VehicleModel;
 
 /**
@@ -134,9 +135,42 @@ public class ModelBuilder {
         return null;
     }
 
-    /*
+
+    public static GasStationModel[] buildGasStationList(Cursor cursor) {
+        GasStationModel[] list = new GasStationModel[cursor.getCount()];
+
+        short i = 0;
+        int flagNameIndex = cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME);
+        int flagIconIndex = cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_ICON);
+
+        while (cursor.moveToNext()) {
+            GasStationModel v = new GasStationModel(0);
+            v.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry._ID)));
+            v.setName(cursor.getString(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_NAME)));
+            v.setLat(cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LAT)));
+            v.setLng(cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LNG)));
+            v.setFlag(cursor.getInt(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+            v.setAddress(cursor.getString(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_ADDRESS)));
+            v.setDataSync(cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_DATASYNC)));
+
+            if (flagNameIndex > -1) {
+                v.setFlagName(cursor.getString(cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME)));
+            }
+
+            if (flagIconIndex > -1) {
+                v.setFlagIcon(cursor.getString(cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_ICON)));
+            }
+
+            list[i++] = v;
+        }
+
+        cursor.close();
+        return list;
+    }
+
     public static GasStationModel buildGasStation(Cursor query) {
         GasStationModel v = new GasStationModel(0);
+
         if (query.moveToFirst()) {
             v.setId(query.getLong(query.getColumnIndex(FillItContract.GasStationEntry._ID)));
             v.setName(query.getString(query.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_NAME)));
@@ -144,7 +178,17 @@ public class ModelBuilder {
             v.setLng(query.getDouble(query.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LNG)));
             v.setFlag(query.getInt(query.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
             v.setAddress(query.getString(query.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_ADDRESS)));
-            v.setDataSync(query.getDate(query.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_DATASYNC)));
+            v.setDataSync(query.getLong(query.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_DATASYNC)));
+
+            int temp = query.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME);
+            if (temp > -1) {
+                v.setFlagName(query.getString(query.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME)));
+            }
+
+            temp = query.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_ICON);
+            if (temp > -1) {
+                v.setFlagIcon(query.getString(query.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_ICON)));
+            }
 
             query.close();
             return v;
@@ -152,7 +196,7 @@ public class ModelBuilder {
 
         return null;
     }
-*/
+
 }
 
 

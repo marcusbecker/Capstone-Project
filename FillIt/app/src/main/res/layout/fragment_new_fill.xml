@@ -13,7 +13,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
             <FrameLayout
                 android:id="@+id/map"
                 android:layout_width="match_parent"
@@ -47,11 +46,20 @@
                 android:layout_below="@+id/map"
                 android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
-                android:hint="gasStation">
+                android:hint="gasStation"
+                android:layout_toStartOf="@+id/btnAddGasStation">
 
                 <requestFocus />
 
             </Spinner>
+
+            <Button
+                android:id="@+id/btnAddGasStation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+"
+                android:layout_below="@+id/map"
+                android:layout_alignParentEnd="true" />
 
             <Spinner
                 android:id="@+id/spVehicle"
@@ -121,4 +129,6 @@
                 android:text="Add" />
         </RelativeLayout>
     </ScrollView>
+
+
 </RelativeLayout>

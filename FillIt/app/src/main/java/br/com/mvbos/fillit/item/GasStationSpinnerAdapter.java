@@ -11,20 +11,20 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import br.com.mvbos.fillit.R;
-import br.com.mvbos.fillit.model.FlagModel;
+import br.com.mvbos.fillit.model.GasStationModel;
 
 /**
  * Created by MarcusS on 27/06/2017.
  */
 
-public class FlagSpinnerAdapter extends ArrayAdapter<FlagModel> {
+public class GasStationSpinnerAdapter extends ArrayAdapter<GasStationModel> {
 
     private Context ctx;
-    private FlagModel[] list;
+    private GasStationModel[] list;
 
     private final String urlPath;
 
-    public FlagSpinnerAdapter(Context context, FlagModel[] list) {
+    public GasStationSpinnerAdapter(Context context, GasStationModel[] list) {
         super(context, R.layout.item_flag_spinner, R.id.spinnerTextView, list);
         this.ctx = context;
         this.list = list;
@@ -42,22 +42,20 @@ public class FlagSpinnerAdapter extends ArrayAdapter<FlagModel> {
     }
 
     public View getCustomView(int position, ViewGroup parent) {
-
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row = inflater.inflate(R.layout.item_flag_spinner, parent, false);
+        View row = inflater.inflate(R.layout.item_gas_station_spinner, parent, false);
 
-        TextView textView = (TextView) row.findViewById(R.id.spinnerTextView);
+        TextView tvGas = (TextView) row.findViewById(R.id.spTextViewGas);
+        TextView tvFlag = (TextView) row.findViewById(R.id.spTextViewFlag);
+        ImageView imageView = (ImageView) row.findViewById(R.id.spImageView);
 
-        if (position < getCount() - 1) {
-            textView.setText(list[position].getName());
+        tvGas.setText(list[position].getName());
+        tvFlag.setText(list[position].getFlagName());
 
-            ImageView imageView = (ImageView) row.findViewById(R.id.spinnerImageView);
-            Picasso.with(ctx)
-                    .load(urlPath + list[position].getIcon())
-                    .placeholder(R.drawable.ic_create_white_24dp)
-                    .into(imageView);
-        }
-
+        Picasso.with(ctx)
+                .load(urlPath + list[position].getFlagIcon())
+                .placeholder(R.drawable.ic_create_white_24dp)
+                .into(imageView);
 
         return row;
     }
