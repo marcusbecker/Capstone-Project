@@ -17,5 +17,6 @@
     <string name="current_location">Você está aqui</string>
     <string name="label_sync_data">Sync</string>
     <string name="label_new_gas_station">New Gas Station</string>
+    <string name="label_no_flag">No flag</string>
 
 </resources>

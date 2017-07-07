@@ -47,16 +47,13 @@ public class FlagSpinnerAdapter extends ArrayAdapter<FlagModel> {
         View row = inflater.inflate(R.layout.item_flag_spinner, parent, false);
 
         TextView textView = (TextView) row.findViewById(R.id.spinnerTextView);
+        textView.setText(list[position].getName());
 
-        if (position < getCount() - 1) {
-            textView.setText(list[position].getName());
-
-            ImageView imageView = (ImageView) row.findViewById(R.id.spinnerImageView);
-            Picasso.with(ctx)
-                    .load(urlPath + list[position].getIcon())
-                    .placeholder(R.drawable.ic_create_white_24dp)
-                    .into(imageView);
-        }
+        ImageView imageView = (ImageView) row.findViewById(R.id.spinnerImageView);
+        Picasso.with(ctx)
+                .load(urlPath + list[position].getIcon())
+                .placeholder(R.drawable.ic_create_white_24dp)
+                .into(imageView);
 
 
         return row;

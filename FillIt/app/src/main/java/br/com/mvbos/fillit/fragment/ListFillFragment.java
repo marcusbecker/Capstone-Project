@@ -119,7 +119,6 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
                 FillItContract.GasStationEntry.COLUMN_NAME_LAT,
                 FillItContract.GasStationEntry.COLUMN_NAME_LNG,
                 FillItContract.GasStationEntry.COLUMN_NAME_FLAG,
-                FillItContract.GasStationEntry.COLUMN_NAME_ADDRESS,
                 FillItContract.VehicleEntry.COLUMN_NAME_PHOTO,
                 FillItContract.VehicleEntry.COLUMN_NAME_NAME,
                 FillItContract.FuelEntry.COLUMN_NAME_NAME
@@ -128,7 +127,6 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
         final String mSelectionClause = ""; //FillItContract.VehicleEntry._ID + " = ?"
         final String[] mSelectionArgs = {};
         final String mSortOrder = null;
-
 
         final Uri uri = FillItContract.BASE_CONTENT_URI
                 .buildUpon()

@@ -45,17 +45,20 @@ public class GasStationSpinnerAdapter extends ArrayAdapter<GasStationModel> {
         LayoutInflater inflater = (LayoutInflater) ctx.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row = inflater.inflate(R.layout.item_gas_station_spinner, parent, false);
 
-        TextView tvGas = (TextView) row.findViewById(R.id.spTextViewGas);
-        TextView tvFlag = (TextView) row.findViewById(R.id.spTextViewFlag);
-        ImageView imageView = (ImageView) row.findViewById(R.id.spImageView);
+            final GasStationModel g = list[position];
 
-        tvGas.setText(list[position].getName());
-        tvFlag.setText(list[position].getFlagName());
+            TextView tvGas = (TextView) row.findViewById(R.id.spTextViewGas);
+            TextView tvFlag = (TextView) row.findViewById(R.id.spTextViewFlag);
+            ImageView imageView = (ImageView) row.findViewById(R.id.spImageView);
 
-        Picasso.with(ctx)
-                .load(urlPath + list[position].getFlagIcon())
-                .placeholder(R.drawable.ic_create_white_24dp)
-                .into(imageView);
+            tvGas.setText(g.getName());
+            tvFlag.setText(g.getFlagName());
+
+            Picasso.with(ctx)
+                    .load(urlPath + g.getFlagIcon())
+                    .placeholder(R.drawable.ic_create_white_24dp)
+                    .into(imageView);
+
 
         return row;
     }

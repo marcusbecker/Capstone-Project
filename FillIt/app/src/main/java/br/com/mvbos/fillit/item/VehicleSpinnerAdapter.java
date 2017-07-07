@@ -46,12 +46,14 @@ public class VehicleSpinnerAdapter extends ArrayAdapter<VehicleModel> {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row = inflater.inflate(R.layout.item_flag_spinner, parent, false);
 
+        VehicleModel v = list[position];
+
         TextView textView = (TextView) row.findViewById(R.id.spinnerTextView);
-        textView.setText(list[position].getName());
+        textView.setText(v.getName());
 
         ImageView imageView = (ImageView) row.findViewById(R.id.spinnerImageView);
 
-        String photo = list[position].getPhoto();
+        String photo = v.getPhoto();
         Bitmap imageBitmap = null;
         if (photo != null && !photo.isEmpty()) {
             //final Bitmap imageBitmap = BitmapFactory.decodeFile(new File(mPath, photo).getAbsolutePath());
@@ -62,9 +64,14 @@ public class VehicleSpinnerAdapter extends ArrayAdapter<VehicleModel> {
         if (imageBitmap != null) {
             imageView.setImageBitmap(FileUtil.roundBitmap(imageBitmap));
         } else {
-
+            //TODO set default image
         }
 
         return row;
+    }
+
+    @Override
+    public int getCount() {
+        return list.length;
     }
 }

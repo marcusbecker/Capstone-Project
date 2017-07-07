@@ -2,6 +2,7 @@ package br.com.mvbos.fillit.fragment;
 
 import android.Manifest;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -49,8 +51,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -82,13 +82,15 @@ public class NewFillFragment extends Fragment implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private static final String ARG_PARAM1 = "param1";
-    private static final int MAP_UPDATE_LOCATION_CHANGE = 3;
-    private static final int MAP_UPDATE_MAP_READY = 5;
-    private static final int MAP_UPDATE_PLACE_PICKER = 7;
+    private static final short MAP_UPDATE_LOCATION_CHANGE = 3;
+    private static final short MAP_UPDATE_MAP_READY = 5;
+    private static final short MAP_UPDATE_PLACE_PICKER = 7;
 
-    private static final int PERMISSIONS_REQUEST_LOCATION = 5;
+    private static final short PERMISSIONS_REQUEST_LOCATION = 5;
 
-    private static final int PLACE_PICKER_REQUEST = 101;
+    private static final short PLACE_PICKER_REQUEST = 101;
+    public static final short GAS_ST_EMPTY_ID = -1;
+    private static final short GAS_ST_NEW_ID = -2;
 
     private GoogleMap mMap;
     private LocationRequest mLocation;
@@ -109,8 +111,9 @@ public class NewFillFragment extends Fragment implements
 
     private OnFragmentInteractionListener mListener;
     private FuelModel[] mFuelList;
-    private GasStationModel[] mGasList;
     private VehicleModel[] mVehicleList;
+
+    private List<GasStationModel> mGasList;
 
     public NewFillFragment() {
     }
@@ -219,16 +222,13 @@ public class NewFillFragment extends Fragment implements
             }
         });
 
-        view.findViewById(R.id.btnAddGasStation).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                GasStationDialogFragment newGasStation = GasStationDialogFragment.newInstance(mFill);
-                newGasStation.show(fm, "fragment_new_gas");
-                newGasStation.setListener(NewFillFragment.this);
-            }
-        });
+    }
 
+    private void selectGasStation() {
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        GasStationDialogFragment newGasStation = GasStationDialogFragment.newInstance(mFill);
+        newGasStation.show(fm, "fragment_new_gas");
+        newGasStation.setListener(NewFillFragment.this);
     }
 
     private void pickPlace(View view) {
@@ -259,7 +259,33 @@ public class NewFillFragment extends Fragment implements
         boolean success;
         final ContentResolver resolver = view.getContext().getContentResolver();
 
-        mFill.setGasStation(0);
+        GasStationModel gasSelected = mGasList.get(mGasStation.getSelectedItemPosition());
+        if (mLastLocation != null) {
+            gasSelected.setLat(mLastLocation.latitude);
+            gasSelected.setLng(mLastLocation.longitude);
+        }
+
+        if (gasSelected.getId() == 0) {
+            Uri mGasStationUri;
+            ContentValues mGasStationValues = new ContentValues();
+            mGasStationValues.put(FillItContract.GasStationEntry.COLUMN_NAME_NAME, gasSelected.getName());
+            mGasStationValues.put(FillItContract.GasStationEntry.COLUMN_NAME_LAT, gasSelected.getLat());
+            mGasStationValues.put(FillItContract.GasStationEntry.COLUMN_NAME_LNG, gasSelected.getLng());
+            mGasStationValues.put(FillItContract.GasStationEntry.COLUMN_NAME_FLAG, gasSelected.getFlag());
+            mGasStationValues.put(FillItContract.GasStationEntry.COLUMN_NAME_ADDRESS, gasSelected.getAddress());
+
+            mGasStationUri = getActivity().getContentResolver().insert(
+                    FillItContract.GasStationEntry.CONTENT_URI,
+                    mGasStationValues);
+
+            final long parsedId = ContentUris.parseId(mGasStationUri);
+            gasSelected.setId(parsedId);
+            mFill.setGasStation(parsedId);
+
+        } else if (gasSelected.getId() > 0) {
+            mFill.setGasStation(gasSelected.getId());
+        }
+
         mFill.setVehicle(mVehicleList[mVehicle.getSelectedItemPosition()].getId());
         mFill.setFuel(mFuelList[mFuel.getSelectedItemPosition()].getId());
         mFill.setPrice(Converter.toFloat(mPrice, 0f));
@@ -316,22 +342,35 @@ public class NewFillFragment extends Fragment implements
 
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
                 getContext(), android.R.layout.simple_spinner_item);
+        mFuel.setAdapter(adapter);
 
+        short i = 0;
         for (FuelModel m : mFuelList) {
+            if (m.getId() == mFill.getFuel()) {
+                mFuel.setSelection(i);
+            } else {
+                i++;
+            }
+
             adapter.add(m.getName());
         }
-        mFuel.setAdapter(adapter);
-        mFuel.setSelection((int) mFill.getFuel());
+
+
     }
 
     private void setVehicleSpinner() {
         final Uri uri = FillItContract.VehicleEntry.CONTENT_URI;
         final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
         mVehicleList = ModelBuilder.buildVehicleList(cursor);
-
         SpinnerAdapter adapter = new VehicleSpinnerAdapter(getContext(), mVehicleList);
         mVehicle.setAdapter(adapter);
-        mVehicle.setSelection((int) mFill.getVehicle());
+
+        for (int i = 0; i < mVehicleList.length; i++) {
+            if (mVehicleList[i].getId() == mFill.getVehicle()) {
+                mVehicle.setSelection(i);
+                break;
+            }
+        }
     }
 
     private void setGasStationSpinner() {
@@ -343,9 +382,58 @@ public class NewFillFragment extends Fragment implements
         final Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
         mGasList = ModelBuilder.buildGasStationList(cursor);
 
-        SpinnerAdapter adapter = new GasStationSpinnerAdapter(getContext(), mGasList);
+        if (mGasList.isEmpty()) {
+            //empty element to be selected
+            addEmptyGasStation();
+        }
+
+        GasStationModel gs = new GasStationModel(GAS_ST_NEW_ID);
+        gs.setName(getString(R.string.label_new_gas_station));
+        gs.setFlagName(getString(R.string.label_no_flag));
+        mGasList.add(gs);
+
+        //final int sel = mGasList.indexOf(mFill.getGasStation());
+        SpinnerAdapter adapter = new GasStationSpinnerAdapter(getContext(), mGasList.toArray(new GasStationModel[0]));
         mGasStation.setAdapter(adapter);
-        mGasStation.setSelection((int) mFill.getGasStation());
+        //mGasStation.setSelection(sel >= 0 ? sel : 0);
+
+        int sel = 0;
+        for (GasStationModel g : mGasList) {
+            if (g.getId() == mFill.getGasStation()) {
+                mGasStation.setSelection(sel);
+                break;
+            } else {
+                sel++;
+            }
+        }
+
+
+        mGasStation.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if (position < mGasList.size()) {
+                    GasStationModel sel = mGasList.get(position);
+                    if (sel.getId() == GAS_ST_NEW_ID) {
+                        selectGasStation();
+                    }
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.i(NewFillFragment.class.getSimpleName(), "Nothing Selected");
+            }
+        });
+    }
+
+    private void addEmptyGasStation() {
+        mGasList.add(new GasStationModel(GAS_ST_EMPTY_ID));
+    }
+
+    private void removeEmptyGasStation() {
+        if (mGasList.get(0).getId() == GAS_ST_EMPTY_ID) {
+            mGasList.remove(0);
+        }
     }
 
     public void onButtonPressed(Uri uri) {
@@ -493,7 +581,6 @@ public class NewFillFragment extends Fragment implements
             mLastMarker.setPosition(mLastLocation);
         }
 
-
         CameraPosition cp = CameraPosition.builder()
                 .target(mLastMarker.getPosition())
                 .zoom(16f)
@@ -506,13 +593,11 @@ public class NewFillFragment extends Fragment implements
 
     @Override
     public void onFinishEditDialog(GasStationModel gas) {
-        List<GasStationModel> temp = new ArrayList<>(mGasList.length + 1);
-        temp.add(gas);
-        temp.addAll(Arrays.asList(mGasList));
-        mGasList = temp.toArray(new GasStationModel[0]);
+        removeEmptyGasStation();
+        mGasList.add(0, gas);
 
-        SpinnerAdapter adapter = new GasStationSpinnerAdapter(getContext(), mGasList);
+        SpinnerAdapter adapter = new GasStationSpinnerAdapter(getContext(), mGasList.toArray(new GasStationModel[0]));
         mGasStation.setAdapter(adapter);
-        mGasStation.setSelection((int) mFill.getGasStation());
+        mGasStation.setSelection(0);
     }
 }
