@@ -10,6 +10,7 @@
     <string name="url_images" translatable="false">http://www.mvbos.com.br/fillit/logos/</string>
     <string name="url_flags" translatable="false">http://www.mvbos.com.br/fillit/flags.php</string>
     <string name="url_sync" translatable="false">http://www.mvbos.com.br/fillit/fuel.php</string>
+    <string name="url_sync_prices" translatable="false">http://www.mvbos.com.br/fillit/prices.php</string>
     <string name="label_tab_one">Abastecimentos</string>
     <string name="label_tab_two">Veículos</string>
     <string name="no_gas_station">No gas station</string>

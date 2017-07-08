@@ -26,6 +26,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -52,12 +53,12 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
 
     private VehicleModel mVehicle;
 
-    private ImageButton mPhoto;
-    private EditText mName;
     private Spinner mFuel;
+    private EditText mName;
+    private ImageButton mPhoto;
 
-    private OnFragmentInteractionListener mListener;
     private String mCurrentPhotoPath;
+    private OnFragmentInteractionListener mListener;
 
     private File mStorageDir;
     private List<FuelModel> mFuelsList;
@@ -169,9 +170,9 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mPhoto = (ImageButton) view.findViewById(R.id.ibPhoto);
-        mName = (EditText) view.findViewById(R.id.etName);
         mFuel = (Spinner) view.findViewById(R.id.spFuel);
+        mName = (EditText) view.findViewById(R.id.etName);
+        mPhoto = (ImageButton) view.findViewById(R.id.ibPhoto);
 
         mName.setText(mVehicle.getName());
 
@@ -191,7 +192,7 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
             }
         }
 
-        final ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, fuelArray);
+        final ArrayAdapter<CharSequence> spinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.item_simple_spinner, fuelArray);
         mFuel.setAdapter(spinnerAdapter);
         mFuel.setSelection(selected);
         mFuel.setOnItemSelectedListener(this);

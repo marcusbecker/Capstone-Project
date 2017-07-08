@@ -3,6 +3,9 @@ package br.com.mvbos.fillit.sync;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.Settings;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,13 +48,18 @@ public class DataSyncTask {
 
     public static void executeTask(Context context, String action) {
         short load = 1;
+
+        final String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        String content = "{\"id\":\"" + androidId + "\"}";
+
         if (ACTION_SYNC.equals(action)) {
             if (load >= 0) {
                 final String url = context.getString(R.string.url_sync);
                 final ContentResolver resolver = context.getContentResolver();
 
                 try {
-                    final String resp = post(url, "");
+                    final String resp = post(url, content);
                     final JSONObject jObject = new JSONObject(resp);
                     final JSONArray fuel = jObject.getJSONArray("Fuel");
                     final long dataSync = Calendar.getInstance().getTimeInMillis();
@@ -82,7 +90,7 @@ public class DataSyncTask {
                 final ContentResolver resolver = context.getContentResolver();
 
                 try {
-                    final String resp = post(url, "");
+                    final String resp = post(url, content);
                     final JSONObject jObject = new JSONObject(resp);
                     final JSONArray flag = jObject.getJSONArray("Flag");
                     final long dataSync = Calendar.getInstance().getTimeInMillis();
@@ -109,7 +117,87 @@ public class DataSyncTask {
                     e.printStackTrace();
                 }
             }
+
+            if (load == 2) {
+
+                try {
+                    final String url = context.getString(R.string.url_sync_prices);
+                    final String jsonPrices = createJsonPrices(context);
+                    final String resp = post(url, content);
+
+                    System.out.println(resp);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
+    private static String createJsonPrices(Context context) {
+        final String[] projection = {
+                FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry._ID,
+                FillItContract.FillEntry.COLUMN_NAME_GASSTATION,
+                FillItContract.FillEntry.COLUMN_NAME_FUEL,
+                FillItContract.FillEntry.COLUMN_NAME_DATE,
+                FillItContract.FillEntry.COLUMN_NAME_PRICE,
+                FillItContract.FillEntry.COLUMN_NAME_LITERS,
+                FillItContract.FillEntry.COLUMN_NAME_LAT,
+                FillItContract.FillEntry.COLUMN_NAME_LNG,
+                FillItContract.GasStationEntry.COLUMN_NAME_LAT,
+                FillItContract.GasStationEntry.COLUMN_NAME_LNG,
+                FillItContract.GasStationEntry.COLUMN_NAME_FLAG,
+                FillItContract.FuelEntry.COLUMN_NAME_NAME
+        };
+
+        final String selectionClause = FillItContract.FillEntry.COLUMN_NAME_DATASYNC + "=?";
+        final String[] selectionArgs = {String.valueOf(0)};
+        final String sortOrder = " LIMIT 30";
+
+        final Uri uri = FillItContract.BASE_CONTENT_URI
+                .buildUpon()
+                .appendPath(FillItContract.PATH_FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL)
+                .build();
+
+        final Cursor cursor = context.getContentResolver().query(
+                uri,
+                projection,
+                selectionClause,
+                selectionArgs,
+                sortOrder);
+
+        final JSONObject jObject = new JSONObject();
+
+        if (cursor.moveToFirst()) {
+            JSONArray arr = new JSONArray();
+
+            try {
+                while (cursor.moveToNext()) {
+                    JSONObject json = new JSONObject();
+
+                    json.put(FillItContract.FillEntry.COLUMN_NAME_GASSTATION, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.FillEntry.COLUMN_NAME_FUEL, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.FillEntry.COLUMN_NAME_DATE, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.FillEntry.COLUMN_NAME_PRICE, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.FillEntry.COLUMN_NAME_LITERS, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.FillEntry.COLUMN_NAME_LAT, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.FillEntry.COLUMN_NAME_LNG, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.GasStationEntry.COLUMN_NAME_FLAG, cursor.getInt(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.GasStationEntry.COLUMN_NAME_LAT, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LAT)));
+                    json.put(FillItContract.GasStationEntry.COLUMN_NAME_LNG, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LNG)));
+                    json.put(FillItContract.GasStationEntry.COLUMN_NAME_FLAG, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                    json.put(FillItContract.FuelEntry.COLUMN_NAME_NAME, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+
+                    arr.put(json);
+                }
+
+                jObject.put("data", arr);
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return jObject.toString();
+    }
 }

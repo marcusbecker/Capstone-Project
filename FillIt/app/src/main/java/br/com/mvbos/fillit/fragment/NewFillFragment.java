@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -48,6 +49,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -103,15 +105,17 @@ public class NewFillFragment extends Fragment implements
     private Spinner mGasStation;
     private Spinner mVehicle;
     private Spinner mFuel;
-    private Button mDate;
     private EditText mPrice;
     private EditText mLiters;
     private EditText mTotal;
+    private Button mButtonDate;
 
 
     private OnFragmentInteractionListener mListener;
     private FuelModel[] mFuelList;
     private VehicleModel[] mVehicleList;
+
+    private Calendar mDateSelected;
 
     private List<GasStationModel> mGasList;
 
@@ -125,6 +129,20 @@ public class NewFillFragment extends Fragment implements
 
         fragment.setArguments(args);
         return fragment;
+    }
+
+    private void showDatePickerDialog() {
+        DialogFragment newFragment = new DatePickerFragment();
+        ((DatePickerFragment) newFragment).setFinishDatePicker(new DatePickerFragment.FinishDatePicker() {
+            @Override
+            public void onFinish(Calendar c) {
+                mDateSelected = c;
+                final DateFormat format = SimpleDateFormat.getDateInstance();
+                mButtonDate.setText(format.format(c.getTime()));
+            }
+        });
+
+        newFragment.show(getFragmentManager(), "timePicker");
     }
 
     @Override
@@ -174,10 +192,10 @@ public class NewFillFragment extends Fragment implements
         mVehicle = (Spinner) view.findViewById(R.id.spVehicle);
         mFuel = (Spinner) view.findViewById(R.id.spFuel);
 
-        mDate = (Button) view.findViewById(R.id.btnDate);
         mPrice = (EditText) view.findViewById(R.id.etPrice);
         mLiters = (EditText) view.findViewById(R.id.etLiters);
         mTotal = (EditText) view.findViewById(R.id.etTotal);
+        mButtonDate = (Button) view.findViewById(R.id.btnDate);
 
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapFragment);
@@ -185,6 +203,14 @@ public class NewFillFragment extends Fragment implements
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
+
+        mButtonDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePickerDialog();
+            }
+        });
 
         setGasStationSpinner();
 
@@ -205,7 +231,7 @@ public class NewFillFragment extends Fragment implements
             fillDate = new Date();
         }
 
-        mDate.setText(SimpleDateFormat.getDateInstance().format(fillDate));
+        mButtonDate.setText(SimpleDateFormat.getDateInstance().format(fillDate));
 
         final View mapButton = view.findViewById(R.id.mapFloatButton);
         mapButton.setOnClickListener(new View.OnClickListener() {
@@ -264,7 +290,6 @@ public class NewFillFragment extends Fragment implements
             gasSelected.setLat(mLastLocation.latitude);
             gasSelected.setLng(mLastLocation.longitude);
         }
-
         if (gasSelected.getId() == 0) {
             Uri mGasStationUri;
             ContentValues mGasStationValues = new ContentValues();
@@ -291,6 +316,12 @@ public class NewFillFragment extends Fragment implements
         mFill.setPrice(Converter.toFloat(mPrice, 0f));
         mFill.setLiters(Math.round(Converter.toFloat(mLiters, 0f)));
 
+        if (mDateSelected != null) {
+            mFill.setDate(mDateSelected.getTimeInMillis());
+        } else if (mFill.getDate() == 0) {
+            mFill.setDate(Calendar.getInstance().getTimeInMillis());
+        }
+
         if (mLastLocation != null) {
             mFill.setLat(mLastLocation.latitude);
             mFill.setLng(mLastLocation.longitude);
@@ -306,7 +337,7 @@ public class NewFillFragment extends Fragment implements
         mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LITERS, mFill.getLiters());
         mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LAT, mFill.getLat());
         mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_LNG, mFill.getLng());
-        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_DATE, Calendar.getInstance().getTimeInMillis());
+        mFillValues.put(FillItContract.FillEntry.COLUMN_NAME_DATE, mFill.getDate());
 
 
         if (mFill.getId() > 0) {
@@ -341,7 +372,7 @@ public class NewFillFragment extends Fragment implements
         mFuelList = ModelBuilder.buildFuelList(cursor);
 
         ArrayAdapter<CharSequence> adapter = new ArrayAdapter<>(
-                getContext(), android.R.layout.simple_spinner_item);
+                getContext(), R.layout.item_simple_spinner);
         mFuel.setAdapter(adapter);
 
         short i = 0;
