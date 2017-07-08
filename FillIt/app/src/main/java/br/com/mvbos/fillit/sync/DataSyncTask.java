@@ -1,10 +1,13 @@
 package br.com.mvbos.fillit.sync;
 
+import android.content.ContentProviderOperation;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.RemoteException;
 import android.provider.Settings;
 
 import org.json.JSONArray;
@@ -12,10 +15,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -35,8 +42,10 @@ public class DataSyncTask {
 
     private static OkHttpClient client = new OkHttpClient();
 
-    private static String post(String url, String json) throws IOException {
-        RequestBody body = RequestBody.create(JSON, json);
+
+    private static String get(String url, String json) throws IOException {
+        RequestBody body = FormBody.create(JSON, json);
+
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
@@ -46,20 +55,42 @@ public class DataSyncTask {
         }
     }
 
+    private static String post(String url, String json) throws IOException {
+
+        RequestBody formBody = new FormBody.Builder()
+                .add("data", json)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(formBody)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            return response.body().string();
+        }
+    }
+
     public static void executeTask(Context context, String action) {
-        short load = 1;
+        short load = 2;
 
         final String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        String content = "{\"id\":\"" + androidId + "\"}";
+        JSONObject content = new JSONObject();
+        try {
+            content.put("id", androidId).toString();
+            content.put("locale", Locale.getDefault().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         if (ACTION_SYNC.equals(action)) {
-            if (load >= 0) {
+            if (load == 0) {
                 final String url = context.getString(R.string.url_sync);
                 final ContentResolver resolver = context.getContentResolver();
 
                 try {
-                    final String resp = post(url, content);
+                    final String resp = get(url, content.toString());
                     final JSONObject jObject = new JSONObject(resp);
                     final JSONArray fuel = jObject.getJSONArray("Fuel");
                     final long dataSync = Calendar.getInstance().getTimeInMillis();
@@ -90,7 +121,7 @@ public class DataSyncTask {
                 final ContentResolver resolver = context.getContentResolver();
 
                 try {
-                    final String resp = post(url, content);
+                    final String resp = get(url, content.toString());
                     final JSONObject jObject = new JSONObject(resp);
                     final JSONArray flag = jObject.getJSONArray("Flag");
                     final long dataSync = Calendar.getInstance().getTimeInMillis();
@@ -122,8 +153,12 @@ public class DataSyncTask {
 
                 try {
                     final String url = context.getString(R.string.url_sync_prices);
-                    final String jsonPrices = createJsonPrices(context);
-                    final String resp = post(url, content);
+                    final JSONObject jsonPrices = createJsonPrices(context);
+                    JSONArray jsonArray = new JSONArray();
+                    jsonArray.put(content);
+                    jsonArray.put(jsonPrices);
+
+                    final String resp = post(url, jsonArray.toString());
 
                     System.out.println(resp);
 
@@ -134,7 +169,7 @@ public class DataSyncTask {
         }
     }
 
-    private static String createJsonPrices(Context context) {
+    private static JSONObject createJsonPrices(Context context) {
         final String[] projection = {
                 FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry._ID,
                 FillItContract.FillEntry.COLUMN_NAME_GASSTATION,
@@ -147,12 +182,11 @@ public class DataSyncTask {
                 FillItContract.GasStationEntry.COLUMN_NAME_LAT,
                 FillItContract.GasStationEntry.COLUMN_NAME_LNG,
                 FillItContract.GasStationEntry.COLUMN_NAME_FLAG,
-                FillItContract.FuelEntry.COLUMN_NAME_NAME
         };
 
-        final String selectionClause = FillItContract.FillEntry.COLUMN_NAME_DATASYNC + "=?";
-        final String[] selectionArgs = {String.valueOf(0)};
-        final String sortOrder = " LIMIT 30";
+        final String selectionClause = FillItContract.FillEntry.COLUMN_NAME_DATASYNC + " IS NULL";
+        final String[] selectionArgs = {};
+        final String sortOrder = null;
 
         final Uri uri = FillItContract.BASE_CONTENT_URI
                 .buildUpon()
@@ -168,36 +202,64 @@ public class DataSyncTask {
 
         final JSONObject jObject = new JSONObject();
 
-        if (cursor.moveToFirst()) {
+        short limit = 30;
+        long longDate = new Date().getTime();
+        ArrayList<ContentProviderOperation> ops = new ArrayList<>(cursor.getCount());
+
+        try {
             JSONArray arr = new JSONArray();
 
-            try {
-                while (cursor.moveToNext()) {
-                    JSONObject json = new JSONObject();
-
-                    json.put(FillItContract.FillEntry.COLUMN_NAME_GASSTATION, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.FillEntry.COLUMN_NAME_FUEL, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.FillEntry.COLUMN_NAME_DATE, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.FillEntry.COLUMN_NAME_PRICE, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.FillEntry.COLUMN_NAME_LITERS, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.FillEntry.COLUMN_NAME_LAT, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.FillEntry.COLUMN_NAME_LNG, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.GasStationEntry.COLUMN_NAME_FLAG, cursor.getInt(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.GasStationEntry.COLUMN_NAME_LAT, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LAT)));
-                    json.put(FillItContract.GasStationEntry.COLUMN_NAME_LNG, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LNG)));
-                    json.put(FillItContract.GasStationEntry.COLUMN_NAME_FLAG, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-                    json.put(FillItContract.FuelEntry.COLUMN_NAME_NAME, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
-
-                    arr.put(json);
+            while (cursor.moveToNext()) {
+                if (limit == 0) {
+                    break;
                 }
 
-                jObject.put("data", arr);
+                limit--;
 
-            } catch (JSONException e) {
+                final long id = cursor.getLong(cursor.getColumnIndex(FillItContract.FillEntry._ID));
+                final String idSel = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry._ID + "=?";
+
+                ops.add(
+                        ContentProviderOperation.newUpdate(FillItContract.FillEntry.CONTENT_URI)
+                                .withValue(FillItContract.FillEntry.COLUMN_NAME_DATASYNC, String.valueOf(longDate))
+                                .withSelection(idSel, new String[]{String.valueOf(id)})
+                                .build());
+
+                JSONObject json = new JSONObject();
+
+                json.put(FillItContract.FillEntry.COLUMN_NAME_GASSTATION, cursor.getLong(cursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_GASSTATION)));
+                json.put(FillItContract.FillEntry.COLUMN_NAME_FUEL, cursor.getLong(cursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_FUEL)));
+                json.put(FillItContract.FillEntry.COLUMN_NAME_DATE, cursor.getLong(cursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATE)));
+                json.put(FillItContract.FillEntry.COLUMN_NAME_PRICE, cursor.getDouble(cursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_PRICE)));
+                json.put(FillItContract.FillEntry.COLUMN_NAME_LITERS, cursor.getDouble(cursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LITERS)));
+                json.put(FillItContract.FillEntry.COLUMN_NAME_LAT, cursor.getDouble(cursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LAT)));
+                json.put(FillItContract.FillEntry.COLUMN_NAME_LNG, cursor.getDouble(cursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LNG)));
+                json.put(FillItContract.GasStationEntry.COLUMN_NAME_FLAG, cursor.getInt(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+                json.put(FillItContract.GasStationEntry.COLUMN_NAME_LAT, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LAT)));
+                json.put(FillItContract.GasStationEntry.COLUMN_NAME_LNG, cursor.getDouble(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_LNG)));
+                json.put(FillItContract.GasStationEntry.COLUMN_NAME_FLAG, cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_FLAG)));
+
+                arr.put(json);
+            }
+
+            jObject.put("data", arr);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        cursor.close();
+
+        if (!ops.isEmpty()) {
+            try {
+                context.getContentResolver().applyBatch(FillItContract.CONTENT_AUTHORITY, ops);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (OperationApplicationException e) {
                 e.printStackTrace();
             }
         }
 
-        return jObject.toString();
+        return jObject;
     }
 }
