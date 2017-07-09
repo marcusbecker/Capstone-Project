@@ -84,8 +84,13 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.menu_report_increase:
+                showReport();
+                return true;
+            case R.id.menu_config:
+                return true;
             case R.id.menu_sync_data:
-                sync();
+                startSyncData();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -121,8 +126,12 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         startActivity(i);
     }
 
+    private void showReport() {
+        Intent intent = new Intent(this, ReportIncreaseActivity.class);
+        startActivity(intent);
+    }
 
-    private void sync() {
+    private void startSyncData() {
         Intent intent = new Intent(this, DataSyncService.class);
         startService(intent);
     }

@@ -22,12 +22,7 @@ import java.util.Locale;
 
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import br.com.mvbos.fillit.util.Http;
 
 /**
  * Created by Marcus Becker on 20/06/2017.
@@ -36,40 +31,7 @@ import okhttp3.Response;
 
 public class DataSyncTask {
 
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-
     public static final String ACTION_SYNC = "dataSync";
-
-    private static OkHttpClient client = new OkHttpClient();
-
-
-    private static String get(String url, String json) throws IOException {
-        RequestBody body = FormBody.create(JSON, json);
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .build();
-        try (Response response = client.newCall(request).execute()) {
-            return response.body().string();
-        }
-    }
-
-    private static String post(String url, String json) throws IOException {
-
-        RequestBody formBody = new FormBody.Builder()
-                .add("data", json)
-                .build();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(formBody)
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            return response.body().string();
-        }
-    }
 
     public static void executeTask(Context context, String action) {
         short load = 2;
@@ -90,7 +52,7 @@ public class DataSyncTask {
                 final ContentResolver resolver = context.getContentResolver();
 
                 try {
-                    final String resp = get(url, content.toString());
+                    final String resp = Http.get(url, content.toString());
                     final JSONObject jObject = new JSONObject(resp);
                     final JSONArray fuel = jObject.getJSONArray("Fuel");
                     final long dataSync = Calendar.getInstance().getTimeInMillis();
@@ -121,7 +83,7 @@ public class DataSyncTask {
                 final ContentResolver resolver = context.getContentResolver();
 
                 try {
-                    final String resp = get(url, content.toString());
+                    final String resp = Http.get(url, content.toString());
                     final JSONObject jObject = new JSONObject(resp);
                     final JSONArray flag = jObject.getJSONArray("Flag");
                     final long dataSync = Calendar.getInstance().getTimeInMillis();
@@ -158,7 +120,7 @@ public class DataSyncTask {
                     jsonArray.put(content);
                     jsonArray.put(jsonPrices);
 
-                    final String resp = post(url, jsonArray.toString());
+                    final String resp = Http.post(url, jsonArray.toString());
 
                     System.out.println(resp);
 

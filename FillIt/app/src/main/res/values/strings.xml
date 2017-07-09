@@ -19,5 +19,7 @@
     <string name="label_sync_data">Sync</string>
     <string name="label_new_gas_station">New Gas Station</string>
     <string name="label_no_flag">No flag</string>
+    <string name="label_report_increase">Report</string>
+    <string name="label_config">Config</string>
 
 </resources>
