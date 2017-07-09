@@ -26,38 +26,38 @@ public class FillItContract {
     public static final String PATH_GASSTATION = "gasstation";
     public static final String PATH_GASSTATION_JOIN_FLAG = "gasstation_join_flag";
 
-    protected static final String SQL_CREATE_FUEL =
+    static final String SQL_CREATE_FUEL =
             "CREATE TABLE " + FillItContract.FuelEntry.TABLE_NAME + " (" + FillItContract.FuelEntry._ID + " INTEGER PRIMARY KEY" + COMMA_SEP + FillItContract.FuelEntry.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP + FillItContract.FuelEntry.COLUMN_NAME_DATASYNC + INT_TYPE + " )";
 
-    protected static final String SQL_DELETE_FUEL =
+    static final String SQL_DELETE_FUEL =
             "DROP TABLE IF EXISTS " + FillItContract.FuelEntry.TABLE_NAME;
 
 
-    protected static final String SQL_CREATE_FLAG =
+    static final String SQL_CREATE_FLAG =
             "CREATE TABLE " + FillItContract.FlagEntry.TABLE_NAME + " (" + FillItContract.FlagEntry._ID + " INTEGER PRIMARY KEY" + COMMA_SEP + FillItContract.FlagEntry.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP + FillItContract.FlagEntry.COLUMN_NAME_ICON + TEXT_TYPE + COMMA_SEP + FillItContract.FlagEntry.COLUMN_NAME_DATASYNC + INT_TYPE + " )";
 
-    protected static final String SQL_DELETE_FLAG =
+    static final String SQL_DELETE_FLAG =
             "DROP TABLE IF EXISTS " + FillItContract.FlagEntry.TABLE_NAME;
 
 
-    protected static final String SQL_CREATE_VEHICLE =
+    static final String SQL_CREATE_VEHICLE =
             "CREATE TABLE " + FillItContract.VehicleEntry.TABLE_NAME + " (" + FillItContract.VehicleEntry._ID + " INTEGER PRIMARY KEY" + COMMA_SEP + FillItContract.VehicleEntry.COLUMN_NAME_PHOTO + TEXT_TYPE + COMMA_SEP + FillItContract.VehicleEntry.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP + FillItContract.VehicleEntry.COLUMN_NAME_FUEL + INT_TYPE + COMMA_SEP + FillItContract.VehicleEntry.COLUMN_NAME_DATASYNC + INT_TYPE + " )";
 
-    protected static final String SQL_DELETE_VEHICLE =
+    static final String SQL_DELETE_VEHICLE =
             "DROP TABLE IF EXISTS " + FillItContract.VehicleEntry.TABLE_NAME;
 
 
-    protected static final String SQL_CREATE_FILL =
+    static final String SQL_CREATE_FILL =
             "CREATE TABLE " + FillItContract.FillEntry.TABLE_NAME + " (" + FillItContract.FillEntry._ID + " INTEGER PRIMARY KEY" + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_GASSTATION + INT_TYPE + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_VEHICLE + INT_TYPE + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_FUEL + INT_TYPE + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_DATE + INT_TYPE + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_PRICE + REAL_TYPE + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_LITERS + INT_TYPE + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_LAT + REAL_TYPE + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_LNG + REAL_TYPE + COMMA_SEP + FillItContract.FillEntry.COLUMN_NAME_DATASYNC + INT_TYPE + " )";
 
-    protected static final String SQL_DELETE_FILL =
+    static final String SQL_DELETE_FILL =
             "DROP TABLE IF EXISTS " + FillItContract.FillEntry.TABLE_NAME;
 
 
-    protected static final String SQL_CREATE_GASSTATION =
+    static final String SQL_CREATE_GASSTATION =
             "CREATE TABLE " + FillItContract.GasStationEntry.TABLE_NAME + " (" + FillItContract.GasStationEntry._ID + " INTEGER PRIMARY KEY" + COMMA_SEP + FillItContract.GasStationEntry.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP + FillItContract.GasStationEntry.COLUMN_NAME_LAT + REAL_TYPE + COMMA_SEP + FillItContract.GasStationEntry.COLUMN_NAME_LNG + REAL_TYPE + COMMA_SEP + FillItContract.GasStationEntry.COLUMN_NAME_FLAG + INT_TYPE + COMMA_SEP + FillItContract.GasStationEntry.COLUMN_NAME_ADDRESS + TEXT_TYPE + COMMA_SEP + FillItContract.GasStationEntry.COLUMN_NAME_DATASYNC + INT_TYPE + " )";
 
-    protected static final String SQL_DELETE_GASSTATION =
+    static final String SQL_DELETE_GASSTATION =
             "DROP TABLE IF EXISTS " + FillItContract.GasStationEntry.TABLE_NAME;
 
 

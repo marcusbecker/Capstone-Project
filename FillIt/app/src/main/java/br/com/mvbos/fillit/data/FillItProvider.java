@@ -15,81 +15,57 @@ import android.net.Uri;
 public class FillItProvider extends ContentProvider {
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private FillItDbHelper mOpenHelper;
-    static final int FUEL = 100;
-    static final int FUEL_WITH_ID = 101;
-    static final int FUEL_WITH_NAME = 102;
-    static final int FUEL_WITH_DATASYNC = 103;
+    private static final int FUEL = 100;
+    private static final int FUEL_WITH_ID = 101;
+    private static final int FUEL_WITH_NAME = 102;
+    private static final int FUEL_WITH_DATASYNC = 103;
 
-    static final int FLAG = 200;
-    static final int FLAG_WITH_ID = 201;
-    static final int FLAG_WITH_NAME = 202;
-    static final int FLAG_WITH_ICON = 203;
-    static final int FLAG_WITH_DATASYNC = 204;
+    private static final int FLAG = 200;
+    private static final int FLAG_WITH_ID = 201;
+    private static final int FLAG_WITH_NAME = 202;
+    private static final int FLAG_WITH_ICON = 203;
+    private static final int FLAG_WITH_DATASYNC = 204;
 
-    static final int VEHICLE = 300;
-    static final int VEHICLE_WITH_ID = 301;
-    static final int VEHICLE_WITH_PHOTO = 302;
-    static final int VEHICLE_WITH_NAME = 303;
-    static final int VEHICLE_WITH_FUEL = 304;
-    static final int VEHICLE_WITH_DATASYNC = 305;
-    static final int VEHICLE_JOIN_FUEL = 306;
+    private static final int VEHICLE = 300;
+    private static final int VEHICLE_WITH_ID = 301;
+    private static final int VEHICLE_WITH_PHOTO = 302;
+    private static final int VEHICLE_WITH_NAME = 303;
+    private static final int VEHICLE_WITH_FUEL = 304;
+    private static final int VEHICLE_WITH_DATASYNC = 305;
+    private static final int VEHICLE_JOIN_FUEL = 306;
 
-    static final int FILL = 400;
-    static final int FILL_WITH_ID = 401;
-    static final int FILL_WITH_GASSTATION = 402;
-    static final int FILL_WITH_VEHICLE = 403;
-    static final int FILL_WITH_FUEL = 404;
-    static final int FILL_WITH_DATE = 405;
-    static final int FILL_WITH_PRICE = 406;
-    static final int FILL_WITH_LITERS = 407;
-    static final int FILL_WITH_LAT = 408;
-    static final int FILL_WITH_LNG = 409;
-    static final int FILL_WITH_DATASYNC = 410;
-    static final int FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL = 411;
+    private static final int FILL = 400;
+    private static final int FILL_WITH_ID = 401;
+    private static final int FILL_WITH_GASSTATION = 402;
+    private static final int FILL_WITH_VEHICLE = 403;
+    private static final int FILL_WITH_FUEL = 404;
+    private static final int FILL_WITH_DATE = 405;
+    private static final int FILL_WITH_PRICE = 406;
+    private static final int FILL_WITH_LITERS = 407;
+    private static final int FILL_WITH_LAT = 408;
+    private static final int FILL_WITH_LNG = 409;
+    private static final int FILL_WITH_DATASYNC = 410;
+    private static final int FILL_JOIN_GASSTATION_JOIN_VEHICLE_JOIN_FUEL = 411;
 
-    static final int GASSTATION = 500;
-    static final int GASSTATION_WITH_ID = 501;
-    static final int GASSTATION_WITH_NAME = 502;
-    static final int GASSTATION_WITH_LAT = 503;
-    static final int GASSTATION_WITH_LNG = 504;
-    static final int GASSTATION_WITH_FLAG = 505;
-    static final int GASSTATION_WITH_ADDRESS = 506;
-    static final int GASSTATION_WITH_DATASYNC = 507;
-    static final int GASSTATION_JOIN_FLAG = 508;
+    private static final int GASSTATION = 500;
+    private static final int GASSTATION_WITH_ID = 501;
+    private static final int GASSTATION_WITH_NAME = 502;
+    private static final int GASSTATION_WITH_LAT = 503;
+    private static final int GASSTATION_WITH_LNG = 504;
+    private static final int GASSTATION_WITH_FLAG = 505;
+    private static final int GASSTATION_WITH_ADDRESS = 506;
+    private static final int GASSTATION_WITH_DATASYNC = 507;
+    private static final int GASSTATION_JOIN_FLAG = 508;
 
     private static final String sFuelId = FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry._ID + " = ? ";
-    private static final String sFuelName = FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry.COLUMN_NAME_NAME + " = ? ";
-    private static final String sFuelDataSync = FillItContract.FuelEntry.TABLE_NAME + "." + FillItContract.FuelEntry.COLUMN_NAME_DATASYNC + " = ? ";
 
     private static final String sFlagId = FillItContract.FlagEntry.TABLE_NAME + "." + FillItContract.FlagEntry._ID + " = ? ";
-    private static final String sFlagName = FillItContract.FlagEntry.TABLE_NAME + "." + FillItContract.FlagEntry.COLUMN_NAME_NAME + " = ? ";
-    private static final String sFlagIcon = FillItContract.FlagEntry.TABLE_NAME + "." + FillItContract.FlagEntry.COLUMN_NAME_ICON + " = ? ";
-    private static final String sFlagDataSync = FillItContract.FlagEntry.TABLE_NAME + "." + FillItContract.FlagEntry.COLUMN_NAME_DATASYNC + " = ? ";
 
     private static final String sVehicleId = FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry._ID + " = ? ";
-    private static final String sVehiclePhoto = FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry.COLUMN_NAME_PHOTO + " = ? ";
-    private static final String sVehicleName = FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry.COLUMN_NAME_NAME + " = ? ";
-    private static final String sVehicleFuel = FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry.COLUMN_NAME_FUEL + " = ? ";
-    private static final String sVehicleDataSync = FillItContract.VehicleEntry.TABLE_NAME + "." + FillItContract.VehicleEntry.COLUMN_NAME_DATASYNC + " = ? ";
 
     private static final String sFillId = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry._ID + " = ? ";
-    private static final String sFillGasstation = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_GASSTATION + " = ? ";
-    private static final String sFillVehicle = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_VEHICLE + " = ? ";
-    private static final String sFillFuel = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_FUEL + " = ? ";
-    private static final String sFillDate = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_DATE + " = ? ";
-    private static final String sFillPrice = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_PRICE + " = ? ";
-    private static final String sFillLiters = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_LITERS + " = ? ";
-    private static final String sFillLat = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_LAT + " = ? ";
-    private static final String sFillLng = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_LNG + " = ? ";
-    private static final String sFillDataSync = FillItContract.FillEntry.TABLE_NAME + "." + FillItContract.FillEntry.COLUMN_NAME_DATASYNC + " = ? ";
 
     private static final String sGasStationId = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry._ID + " = ? ";
-    private static final String sGasStationName = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_NAME + " = ? ";
-    private static final String sGasStationLat = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_LAT + " = ? ";
-    private static final String sGasStationLng = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_LNG + " = ? ";
-    private static final String sGasStationFlag = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_FLAG + " = ? ";
-    private static final String sGasStationAddress = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_ADDRESS + " = ? ";
-    private static final String sGasStationDataSync = FillItContract.GasStationEntry.TABLE_NAME + "." + FillItContract.GasStationEntry.COLUMN_NAME_DATASYNC + " = ? ";
 
     private static final SQLiteQueryBuilder sVehicleJoinFuel;
     private static final SQLiteQueryBuilder sFillJoinGasStationJoinVehicleJoinFuel;
@@ -163,7 +139,7 @@ public class FillItProvider extends ContentProvider {
         );
     }
 
-    static UriMatcher buildUriMatcher() {
+    private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = FillItContract.CONTENT_AUTHORITY;
         matcher.addURI(authority, FillItContract.PATH_FUEL, FUEL);
@@ -321,9 +297,8 @@ public class FillItProvider extends ContentProvider {
             }
 
             case FUEL_WITH_ID: {
-                String mSelection = sFuelId;
                 String[] mSelectionArgs = {uri.getPathSegments().get(1)};
-                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FuelEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FuelEntry.TABLE_NAME, projection, sFuelId, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -363,9 +338,8 @@ public class FillItProvider extends ContentProvider {
             }
 
             case FLAG_WITH_ID: {
-                String mSelection = sFlagId;
                 String[] mSelectionArgs = {uri.getPathSegments().get(1)};
-                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FlagEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FlagEntry.TABLE_NAME, projection, sFlagId, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -416,9 +390,8 @@ public class FillItProvider extends ContentProvider {
             }
 
             case VEHICLE_WITH_ID: {
-                String mSelection = sVehicleId;
                 String[] mSelectionArgs = {uri.getPathSegments().get(1)};
-                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.VehicleEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.VehicleEntry.TABLE_NAME, projection, sVehicleId, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -490,9 +463,8 @@ public class FillItProvider extends ContentProvider {
             }
 
             case FILL_WITH_ID: {
-                String mSelection = sFillId;
                 String[] mSelectionArgs = {uri.getPathSegments().get(1)};
-                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FillEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.FillEntry.TABLE_NAME, projection, sFillId, mSelectionArgs, null, null, null);
                 break;
             }
 
@@ -619,9 +591,8 @@ public class FillItProvider extends ContentProvider {
             }
 
             case GASSTATION_WITH_ID: {
-                String mSelection = sGasStationId;
                 String[] mSelectionArgs = {uri.getPathSegments().get(1)};
-                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.GasStationEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, null);
+                retCursor = mOpenHelper.getReadableDatabase().query(FillItContract.GasStationEntry.TABLE_NAME, projection, sGasStationId, mSelectionArgs, null, null, null);
                 break;
             }
 

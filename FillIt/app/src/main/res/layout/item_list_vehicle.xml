@@ -10,7 +10,7 @@
         android:layout_height="70dp"
         android:layout_margin="8dp"
         android:adjustViewBounds="true"
-        android:contentDescription="photo" />
+        android:contentDescription="@string/label_item_photo" />
 
     <TextView
         android:id="@+id/tvName"
@@ -18,8 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/ivPhoto"
         android:layout_toEndOf="@+id/ivPhoto"
-        android:hint="name"
-        android:inputType="text" />
+        android:text="@string/label_name" />
 
     <TextView
         android:id="@+id/tvFuel"
@@ -27,7 +26,6 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tvName"
         android:layout_below="@+id/tvName"
-        android:hint="@string/fuel_default"
-        android:inputType="text" />
+        android:text="@string/fuel_default" />
 
 </RelativeLayout>

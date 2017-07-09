@@ -1,35 +1,46 @@
 <resources>
     <string name="app_name">Fill It</string>
-    <string name="content_authority">br.com.mvbos.fillit</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="fuel_default">Combustível padrão</string>
-
-
+    <string name="content_authority" translatable="false">br.com.mvbos.fillit</string>
     <string name="url_images" translatable="false">http://www.mvbos.com.br/fillit/logos/</string>
-    <string name="url_flags" translatable="false">http://www.mvbos.com.br/fillit/flags.php</string>
-    <string name="url_sync" translatable="false">http://www.mvbos.com.br/fillit/fuel.php</string>
+    <string name="url_sync" translatable="false">http://www.mvbos.com.br/fillit/flag_fuel.php</string>
     <string name="url_sync_prices" translatable="false">http://www.mvbos.com.br/fillit/prices.php</string>
-    <string name="label_tab_one">Abastecimentos</string>
-    <string name="label_tab_two">Veículos</string>
+
+    <string name="fuel_default">Default fuel</string>
+    <string name="label_tab_one">Fills</string>
+    <string name="label_tab_two">Vehicles</string>
     <string name="no_gas_station">No gas station</string>
-    <string name="format_litter_fuel_price">%1$d litters of %2$s for %3$s</string>
-    <string name="current_location">Você está aqui</string>
+    <string name="format_litter_fuel_price">%1$d liters of %2$s for %3$s</string>
+    <string name="current_location">You are here</string>
     <string name="label_sync_data">Sync</string>
     <string name="label_new_gas_station">New Gas Station</string>
     <string name="label_no_flag">No flag</string>
     <string name="label_report_increase">Report</string>
     <string name="label_config">Config</string>
-    <string name="label_loading">Loading</string>
-    <string name="label_end_sync">Sincronização finalizada.</string>
-    <string name="label_no_data">Nenhum registro encontrado</string>
+    <string name="label_loading">Loading...</string>
+    <string name="label_end_sync">Synchronization finished.</string>
+    <string name="label_no_data">No records available</string>
 
-    <string name="pref_sync">Uso de dados</string>
-    <string name="pref_sync_summ">Utilizar GPS e dados sempre que possivel</string>
-    <string name="pref_syncConnectionType">Selecionar tipos de dados</string>
+    <string name="pref_sync">Data use</string>
+    <string name="pref_sync_summ">Use GPS and data always as possible</string>
+    <string name="pref_syncConnectionType">Select data types</string>
     <string name="pref_syncConnectionTypes_default">2</string>
-    <string name="pref_share">Compartilhar preços</string>
-    <string name="pref_share_summ">Compartilhar preços e localização dos postos de forma anônima</string>
+    <string name="pref_share">Share prices</string>
+    <string name="pref_share_summ">Share prices and location of posts anonymously</string>
+    <string name="label_take_photo">Take a picture</string>
+    <string name="label_name">Name</string>
+    <string name="label_save">Save</string>
+    <string name="label_gas_station">Gas Station</string>
+    <string name="label_vehicle">Vehicle</string>
+    <string name="label_liters">Liters</string>
+    <string name="label_price">Price</string>
+    <string name="label_total">Total</string>
+    <string name="label_number_example">0.00</string>
+    <string name="label_date">Date</string>
+    <string name="label_add_fill">Add new fill</string>
+    <string name="label_new_vehicle">Add new Vehicle</string>
+    <string name="label_item_icon">Icon item</string>
+    <string name="label_item_photo">Item photo</string>
+    <string name="error_permission">Permission denied</string>
+    <string name="error_base">Data base error</string>
 
 </resources>

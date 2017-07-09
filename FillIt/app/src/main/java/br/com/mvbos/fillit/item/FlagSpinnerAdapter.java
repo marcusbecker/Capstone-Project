@@ -19,8 +19,8 @@ import br.com.mvbos.fillit.model.FlagModel;
 
 public class FlagSpinnerAdapter extends ArrayAdapter<FlagModel> {
 
-    private Context ctx;
-    private FlagModel[] list;
+    private final Context ctx;
+    private final FlagModel[] list;
 
     private final String urlPath;
 

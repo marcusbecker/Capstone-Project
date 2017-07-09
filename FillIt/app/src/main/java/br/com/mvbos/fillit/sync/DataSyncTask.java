@@ -6,10 +6,16 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.provider.Settings;
+import android.preference.PreferenceManager;
+import android.util.Log;
+
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,111 +37,135 @@ import br.com.mvbos.fillit.util.PrefsUtil;
  */
 
 
-public class DataSyncTask {
+class DataSyncTask {
+
+    private DataSyncTask() {
+    }
 
     public static final String ACTION_SYNC = "dataSync";
 
     public static void executeTask(Context context, String action) {
-        short load = 0;
-
-        final String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-
-        JSONObject content = new JSONObject();
-        try {
-            content.put("id", androidId).toString();
-            content.put("locale", Locale.getDefault().toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         if (ACTION_SYNC.equals(action)) {
-            if (load == 0) {
-                final String url = context.getString(R.string.url_sync);
-                final ContentResolver resolver = context.getContentResolver();
 
-                try {
-                    final String resp = Http.get(url, content.toString());
-                    final JSONObject jObject = new JSONObject(resp);
-                    final JSONArray fuel = jObject.getJSONArray("Fuel");
-                    final long dataSync = Calendar.getInstance().getTimeInMillis();
+            final Resources resources = context.getResources();
+            final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 
-                    ContentValues[] values = new ContentValues[fuel.length()];
+            boolean enableSync = true;
+            boolean enableShare = true;
 
-                    for (int i = 0; i < fuel.length(); i++) {
-                        values[i] = new ContentValues();
-                        final String name = fuel.getJSONObject(i).getString("name");
-
-                        values[i].put(FillItContract.FuelEntry._ID, i + 1);
-                        values[i].put(FillItContract.FuelEntry.COLUMN_NAME_NAME, name);
-                        values[i].put(FillItContract.FuelEntry.COLUMN_NAME_DATASYNC, dataSync);
-                    }
-
-                    resolver.bulkInsert(FillItContract.FuelEntry.CONTENT_URI, values);
-
-                    final SharedPreferences pref = context.getSharedPreferences(PrefsUtil.NAME, Context.MODE_PRIVATE);
-                    final SharedPreferences.Editor edit = pref.edit();
-                    edit.putLong(PrefsUtil.PREF_FIRST_USE, Calendar.getInstance().getTimeInMillis());
-                    edit.commit();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
+            if (pref.contains(resources.getString(R.string.pref_sync))) {
+                enableSync = pref.getBoolean(resources.getString(R.string.pref_sync), enableSync);
+                enableShare = pref.getBoolean(resources.getString(R.string.pref_share), enableSync);
             }
 
-            if (load == 1) {
-                final String url = context.getString(R.string.url_flags);
-                final ContentResolver resolver = context.getContentResolver();
-
-                try {
-                    final String resp = Http.get(url, content.toString());
-                    final JSONObject jObject = new JSONObject(resp);
-                    final JSONArray flag = jObject.getJSONArray("Flag");
-                    final long dataSync = Calendar.getInstance().getTimeInMillis();
-
-                    ContentValues[] values = new ContentValues[flag.length()];
-
-                    for (int i = 0; i < flag.length(); i++) {
-                        values[i] = new ContentValues();
-                        final int id = flag.getJSONObject(i).getInt("id");
-                        final String icon = flag.getJSONObject(i).getString("icon");
-                        final String name = flag.getJSONObject(i).getString("name");
-
-                        values[i].put(FillItContract.FlagEntry._ID, id);
-                        values[i].put(FillItContract.FlagEntry.COLUMN_NAME_NAME, name);
-                        values[i].put(FillItContract.FlagEntry.COLUMN_NAME_ICON, icon);
-                        values[i].put(FillItContract.FlagEntry.COLUMN_NAME_DATASYNC, dataSync);
-                    }
-
-                    resolver.bulkInsert(FillItContract.FlagEntry.CONTENT_URI, values);
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+            if (!enableSync) {
+                return;
             }
 
-            if (load == 2) {
+            final String url = context.getString(R.string.url_sync);
+            final ContentResolver resolver = context.getContentResolver();
 
+            final String androidId = getAdId(context);
+            JSONObject content = new JSONObject();
+
+            try {
+                content.put("id", androidId != null ? androidId : "id-not-found");
+                content.put("locale", Locale.getDefault().toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                final String resp = Http.get(url, content.toString());
+                final long dataSync = Calendar.getInstance().getTimeInMillis();
+
+                final JSONObject jObject = new JSONObject(resp);
+                final JSONArray fuel = jObject.getJSONArray("Fuel");
+
+                ContentValues[] values = new ContentValues[fuel.length()];
+
+                for (int i = 0; i < fuel.length(); i++) {
+                    values[i] = new ContentValues();
+                    final String name = fuel.getJSONObject(i).getString("name");
+
+                    values[i].put(FillItContract.FuelEntry._ID, i + 1);
+                    values[i].put(FillItContract.FuelEntry.COLUMN_NAME_NAME, name);
+                    values[i].put(FillItContract.FuelEntry.COLUMN_NAME_DATASYNC, dataSync);
+                }
+
+                resolver.bulkInsert(FillItContract.FuelEntry.CONTENT_URI, values);
+
+                final JSONArray flag = jObject.getJSONArray("Flag");
+
+                values = new ContentValues[flag.length()];
+
+                for (int i = 0; i < flag.length(); i++) {
+                    values[i] = new ContentValues();
+                    final int id = flag.getJSONObject(i).getInt("id");
+                    final String icon = flag.getJSONObject(i).getString("icon");
+                    final String name = flag.getJSONObject(i).getString("name");
+
+                    values[i].put(FillItContract.FlagEntry._ID, id);
+                    values[i].put(FillItContract.FlagEntry.COLUMN_NAME_NAME, name);
+                    values[i].put(FillItContract.FlagEntry.COLUMN_NAME_ICON, icon);
+                    values[i].put(FillItContract.FlagEntry.COLUMN_NAME_DATASYNC, dataSync);
+                }
+
+                resolver.bulkInsert(FillItContract.FlagEntry.CONTENT_URI, values);
+
+                final SharedPreferences initPref = context.getSharedPreferences(PrefsUtil.NAME, Context.MODE_PRIVATE);
+                final SharedPreferences.Editor edit = initPref.edit();
+                edit.putLong(PrefsUtil.PREF_FIRST_USE, Calendar.getInstance().getTimeInMillis());
+                edit.apply();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if (enableShare) {
                 try {
-                    final String url = context.getString(R.string.url_sync_prices);
+                    final String urlPrices = context.getString(R.string.url_sync_prices);
                     final JSONObject jsonPrices = createJsonPrices(context);
                     JSONArray jsonArray = new JSONArray();
                     jsonArray.put(content);
                     jsonArray.put(jsonPrices);
 
-                    final String resp = Http.post(url, jsonArray.toString());
-
-                    System.out.println(resp);
+                    final String resp = Http.post(urlPrices, jsonArray.toString());
+                    Log.d(DataSyncTask.class.getName(), resp);
 
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    public static synchronized String getAdId(Context context) {
+
+        String advertId = null;
+
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT) {
+            return null;
+        }
+
+        try {
+            AdvertisingIdClient.Info idInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
+            advertId = idInfo.getId();
+
+        } catch (GooglePlayServicesNotAvailableException e) {
+            e.printStackTrace();
+        } catch (GooglePlayServicesRepairableException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
+        return advertId;
     }
 
     private static JSONObject createJsonPrices(Context context) {

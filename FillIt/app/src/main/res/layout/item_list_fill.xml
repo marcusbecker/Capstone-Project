@@ -10,7 +10,7 @@
         android:layout_height="70dp"
         android:layout_margin="8dp"
         android:adjustViewBounds="true"
-        android:contentDescription="photo" />
+        android:contentDescription="@string/label_item_photo" />
 
     <TextView
         android:id="@+id/tvVehicle"
@@ -18,33 +18,32 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tvLiters"
         android:layout_alignTop="@+id/ivPhoto"
-        android:hint="vehicle" />
+        android:hint="@string/label_vehicle" />
 
     <TextView
-        android:id="@+id/tvGasstation"
+        android:id="@+id/tvGasStation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/tvVehicle"
         android:layout_below="@+id/tvVehicle"
-        android:hint="gasStation" />
+        android:hint="@string/label_gas_station" />
 
 
     <TextView
         android:id="@+id/tvDate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/tvGasstation"
-
+        android:layout_above="@+id/tvGasStation"
         android:layout_alignParentEnd="true"
-        android:hint="date" />
+        android:hint="@string/label_date" />
 
     <TextView
         android:id="@+id/tvLiters"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="liters"
-        android:layout_below="@+id/tvGasstation"
-        android:layout_toEndOf="@+id/ivPhoto" />
+        android:layout_below="@+id/tvGasStation"
+        android:layout_toEndOf="@+id/ivPhoto"
+        android:hint="@string/label_liters" />
 
 
 </RelativeLayout>

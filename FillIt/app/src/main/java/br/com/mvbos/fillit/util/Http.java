@@ -17,7 +17,7 @@ public class Http {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private static OkHttpClient client = new OkHttpClient();
+    private static final OkHttpClient client = new OkHttpClient();
 
     public static String get(String url, String json) throws IOException {
         RequestBody body = FormBody.create(JSON, json);

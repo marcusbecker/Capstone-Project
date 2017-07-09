@@ -1,6 +1,6 @@
 package br.com.mvbos.fillit;
 
-
+import android.annotation.SuppressLint;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -38,6 +38,7 @@ public class ReportIncreaseActivity extends AppCompatActivity implements LoaderM
 
     private GraphView graph;
 
+    @SuppressLint("SimpleDateFormat")
     final DateFormat df = new SimpleDateFormat("dd");
 
     private final String mSortOrder = FillItContract.FillEntry.COLUMN_NAME_DATE + " ASC";
@@ -142,7 +143,6 @@ public class ReportIncreaseActivity extends AppCompatActivity implements LoaderM
                 vLabel[i] = vLabel[0];
                 points[i] = new DataPoint(i, points[0].getY());
             }
-
 
             staticLabelsFormatter.setHorizontalLabels(hLabel);
             staticLabelsFormatter.setVerticalLabels(vLabel);

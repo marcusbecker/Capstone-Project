@@ -38,8 +38,7 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     }
 
     public static ListVehicleFragment newInstance() {
-        ListVehicleFragment fragment = new ListVehicleFragment();
-        return fragment;
+        return new ListVehicleFragment();
     }
 
     @Override

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Enche o tangue</string>
+    <string name="fuel_default">Combustível padrão</string>
+    <string name="label_tab_one">Abastecimentos</string>
+    <string name="label_tab_two">Veículos</string>
+    <string name="no_gas_station">Sem posto cadastrado</string>
+    <string name="format_litter_fuel_price">%1$d litros de %2$s por %3$s</string>
+    <string name="current_location">Você está aqui</string>
+    <string name="label_sync_data">Sincronizar</string>
+    <string name="label_new_gas_station">Novo Posto</string>
+    <string name="label_no_flag">Sem bandeira cadastrada</string>
+    <string name="label_report_increase">Relatório</string>
+    <string name="label_config">Config.</string>
+    <string name="label_loading">Carregando...</string>
+    <string name="label_end_sync">Sincronização finalizada.</string>
+    <string name="label_no_data">Nenhum registro encontrado.</string>
+
+    <string name="pref_sync">Uso de dados</string>
+    <string name="pref_sync_summ">Utilizar GPS e dados sempre que possível</string>
+    <string name="pref_syncConnectionType">Selecionar tipos de dados</string>
+    <string name="pref_share">Compartilhar preços</string>
+    <string name="pref_share_summ">Compartilhar preços e localização dos postos de forma anônima</string>
+    <string name="label_take_photo">Tirar foto</string>
+    <string name="label_name">Nome</string>
+    <string name="label_save">Salvar</string>
+    <string name="label_gas_station">Posto de gasolina</string>
+    <string name="label_vehicle">Veículo</string>
+    <string name="label_liters">Litros</string>
+    <string name="label_price">Preço</string>
+    <string name="label_total">Total</string>
+    <string name="label_number_example">0.00</string>
+    <string name="label_date">Data</string>
+    <string name="label_add_fill">Novo abastecimento</string>
+    <string name="label_new_vehicle">Novo veículo</string>
+    <string name="label_item_icon">Ícone</string>
+    <string name="label_item_photo">Item foto</string>
+    <string name="error_permission">Permissão negada</string>
+    <string name="error_base">Erro ao acessar a base</string>
+
+</resources>

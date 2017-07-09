@@ -19,8 +19,8 @@ import br.com.mvbos.fillit.model.GasStationModel;
 
 public class GasStationSpinnerAdapter extends ArrayAdapter<GasStationModel> {
 
-    private Context ctx;
-    private GasStationModel[] list;
+    private final Context ctx;
+    private final GasStationModel[] list;
 
     private final String urlPath;
 

@@ -26,7 +26,6 @@ public class DataSyncJobService extends com.firebase.jobdispatcher.JobService {
 
             @Override
             protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
                 boolean needToBeRescheduled = false;
                 jobFinished(jobParameters, needToBeRescheduled);
             }

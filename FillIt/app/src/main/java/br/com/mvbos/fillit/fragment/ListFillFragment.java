@@ -33,13 +33,7 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     public static ListFillFragment newInstance() {
-        ListFillFragment fragment = new ListFillFragment();
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        return new ListFillFragment();
     }
 
     @Override

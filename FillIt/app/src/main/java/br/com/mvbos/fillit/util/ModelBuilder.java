@@ -101,6 +101,10 @@ public class ModelBuilder {
     }
 
     public static FuelModel[] buildFuelList(Cursor cursor) {
+        if (cursor == null) {
+            return new FuelModel[0];
+        }
+
         FuelModel[] list = new FuelModel[cursor.getCount()];
 
         short i = 0;

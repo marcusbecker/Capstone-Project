@@ -27,10 +27,10 @@ import br.com.mvbos.fillit.util.FileUtil;
 
 public class FillAdapter extends RecyclerView.Adapter<FillAdapter.ViewHolder> {
 
-    private Resources mResources;
+    private final Resources mResources;
     private Cursor mCursor;
     private File mPath;
-    private View.OnClickListener mOnClickItem;
+    private final View.OnClickListener mOnClickItem;
 
     private final DateFormat dateFormat;
     private final NumberFormat numberFormat;
@@ -44,24 +44,20 @@ public class FillAdapter extends RecyclerView.Adapter<FillAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView mImageViewPhoto;
+        public final ImageView mImageViewPhoto;
 
-        public TextView mGasStation;
-        public TextView mVehicle;
-        public TextView mDate;
-        public TextView mLiters;
-        public TextView mLat;
-        public TextView mLng;
+        public final TextView mGasStation;
+        public final TextView mVehicle;
+        public final TextView mDate;
+        public final TextView mLiters;
 
         public ViewHolder(View view) {
             super(view);
             mImageViewPhoto = (ImageView) view.findViewById(R.id.ivPhoto);
-            mGasStation = (TextView) view.findViewById(R.id.tvGasstation);
+            mGasStation = (TextView) view.findViewById(R.id.tvGasStation);
             mVehicle = (TextView) view.findViewById(R.id.tvVehicle);
             mDate = (TextView) view.findViewById(R.id.tvDate);
             mLiters = (TextView) view.findViewById(R.id.tvLiters);
-            //mLat = (TextView) view.findViewById(R.id.tvLat);
-            //mLng = (TextView) view.findViewById(R.id.tvLng);
         }
     }
 

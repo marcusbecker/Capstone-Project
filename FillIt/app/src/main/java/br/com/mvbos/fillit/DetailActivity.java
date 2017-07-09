@@ -24,7 +24,7 @@ public class DetailActivity extends AppCompatActivity implements OnFragmentInter
     public static final String BUNDLE_ADD = "b_add";
     public static final int ADD_VEHICLE = 30;
     public static final int ADD_FILL = 40;
-    public static final String CURRENT_FRAGMENT = "currentFragment";
+    private static final String CURRENT_FRAGMENT = "currentFragment";
 
     private Fragment mContent;
 

@@ -1,157 +1,147 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".fragment.NewFillFragment">
 
-    <ScrollView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:layout_height="wrap_content">
 
-        <RelativeLayout
+        <FrameLayout
+            android:id="@+id/map"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <FrameLayout
-                android:id="@+id/map"
+            <fragment
+                android:id="@+id/mapFragment"
+                class="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="250dp"
+                app:elevation="6dp" />
 
-                <fragment
-                    android:id="@+id/mapFragment"
-                    class="com.google.android.gms.maps.SupportMapFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:elevation="6dp" />
-
-                <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/mapFloatButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|right|end"
-                    android:layout_margin="16dp"
-                    android:src="@drawable/ic_create_white_24dp"
-                    app:fabSize="normal" />
-
-            </FrameLayout>
-
-            <Spinner
-                android:id="@+id/spGasStation"
-                android:layout_width="match_parent"
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/mapFloatButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/map"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:hint="gasStation">
+                android:layout_gravity="bottom|right|end"
+                android:layout_margin="16dp"
+                android:src="@drawable/ic_create_white_24dp"
+                app:fabSize="normal" />
 
-            </Spinner>
+        </FrameLayout>
 
-            <Spinner
-                android:id="@+id/spVehicle"
-                android:layout_width="match_parent"
+        <Spinner
+            android:id="@+id/spGasStation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/map"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:hint="@string/label_gas_station">
+
+        </Spinner>
+
+        <Spinner
+            android:id="@+id/spVehicle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/spGasStation"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:hint="@string/label_vehicle"
+            android:inputType="text" />
+
+        <Spinner
+            android:id="@+id/spFuel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/spVehicle"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp" />
+
+        <LinearLayout
+            android:id="@+id/d"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/spFuel"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/spGasStation"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                android:hint="vehicle"
-                android:inputType="text" />
+                android:layout_weight=".25"
+                android:text="@string/label_liters" />
 
-            <Spinner
-                android:id="@+id/spFuel"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/spVehicle"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp" />
+                android:layout_weight=".35"
+                android:text="@string/label_price" />
 
-            <LinearLayout
-                android:id="@+id/d"
-                android:layout_width="match_parent"
+            <TextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/spFuel"
-                android:orientation="horizontal">
+                android:layout_weight=".40"
+                android:text="@string/label_total" />
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".25"
-                    android:text="Litters" />
+        <LinearLayout
+            android:id="@+id/dd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/d"
+            android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".35"
-                    android:text="Price" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".40"
-                    android:hint="Total"
-                    android:inputType="numberDecimal" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/dd"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/etLiters"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/d"
-                android:orientation="horizontal">
+                android:layout_weight=".25"
+                android:hint="@string/label_number_example"
+                android:inputType="numberDecimal" />
 
-                <EditText
-                    android:id="@+id/etLiters"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".25"
-                    android:hint="0.00"
-                    android:inputType="numberDecimal" />
-
-                <EditText
-                    android:id="@+id/etPrice"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".35"
-                    android:hint="0.00"
-                    android:inputType="numberDecimal" />
-
-                <EditText
-                    android:id="@+id/etTotal"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight=".40"
-                    android:hint="0.00"
-                    android:inputType="numberDecimal" />
-            </LinearLayout>
-
-
-            <Button
-                android:id="@+id/btnDate"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/etPrice"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/dd"
-                android:hint="date" />
+                android:layout_weight=".35"
+                android:hint="@string/label_number_example"
+                android:inputType="numberDecimal" />
 
-            <Button
-                android:id="@+id/btnAdd"
-                android:layout_width="match_parent"
+            <EditText
+                android:id="@+id/etTotal"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/btnDate"
-                android:text="Add" />
-
-        </RelativeLayout>
-    </ScrollView>
+                android:layout_weight=".40"
+                android:hint="@string/label_number_example"
+                android:inputType="numberDecimal" />
+        </LinearLayout>
 
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/btnDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/dd"
+            android:hint="@string/label_date" />
+
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/btnDate"
+            android:text="@string/label_add_fill" />
+
+    </RelativeLayout>
+</ScrollView>

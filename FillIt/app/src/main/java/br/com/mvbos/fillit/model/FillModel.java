@@ -24,19 +24,6 @@ public class FillModel implements Parcelable {
         this.id = id;
     }
 
-    public FillModel(long id, long gasStation, long vehicle, long fuel, long date, double price, int liters, double lat, double lng, long dataSync) {
-        this.id = id;
-        this.gasStation = gasStation;
-        this.vehicle = vehicle;
-        this.fuel = fuel;
-        this.date = date;
-        this.price = price;
-        this.liters = liters;
-        this.lat = lat;
-        this.lng = lng;
-        this.dataSync = dataSync;
-    }
-
     public FillModel(Parcel in) {
         this.id = in.readLong();
         this.gasStation = in.readLong();

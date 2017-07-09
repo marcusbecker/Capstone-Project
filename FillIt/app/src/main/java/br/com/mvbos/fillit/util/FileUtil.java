@@ -1,5 +1,6 @@
 package br.com.mvbos.fillit.util;
 
+import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -23,18 +24,16 @@ import java.util.Date;
 public class FileUtil {
     public static final String AUTHORITY = "br.com.mvbos.fillit.fileprovider";
 
-
+    @SuppressLint("SimpleDateFormat")
     public static File createImageFile(File storageDir) throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
 
-        File image = File.createTempFile(
+        return File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
-        return image;
     }
 
     public static void setPic(ImageView imageView, String photoPath) {
@@ -85,8 +84,7 @@ public class FileUtil {
         bmOptions.inJustDecodeBounds = false;
         bmOptions.inSampleSize = scaleFactor;
 
-        Bitmap bitmap = BitmapFactory.decodeFile(path, bmOptions);
-        return bitmap;
+        return BitmapFactory.decodeFile(path, bmOptions);
     }
 
     public static void setPic(ImageView imageView, Bitmap pictureBitmap, String photoPath) {

@@ -15,7 +15,7 @@
         android:id="@+id/etName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Name"
+        android:hint="@string/label_name"
         android:inputType="text" />
 
     <Spinner
@@ -27,6 +27,6 @@
         android:id="@+id/btnSave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Save" />
+        android:text="@string/label_save" />
 
 </LinearLayout>

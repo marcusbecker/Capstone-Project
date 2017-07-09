@@ -77,13 +77,14 @@ import br.com.mvbos.fillit.util.ModelBuilder;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
-import static com.google.android.gms.internal.zzt.TAG;
 
 public class NewFillFragment extends Fragment implements
         GasStationDialogFragment.DialogEditListener,
         OnMapReadyCallback,
         LocationListener,
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
+    private static final String TAG = "NewFillFragment";
 
     private static final String ARG_PARAM_ID = "param_id";
     private static final short MAP_UPDATE_LOCATION_CHANGE = 3;
@@ -164,7 +165,7 @@ public class NewFillFragment extends Fragment implements
             boolean enableSync = true;
 
             if (pref.contains(getString(R.string.pref_sync))) {
-                enableSync = pref.getBoolean(getString(R.string.pref_sync), enableSync);
+                enableSync = pref.getBoolean(getString(R.string.pref_sync), true);
             }
 
             if (enableSync) {
@@ -576,8 +577,6 @@ public class NewFillFragment extends Fragment implements
                 } else {
                     Log.d("", "permission denied");
                 }
-
-                return;
             }
         }
     }

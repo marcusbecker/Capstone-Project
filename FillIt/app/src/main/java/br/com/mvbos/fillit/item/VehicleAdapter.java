@@ -24,7 +24,7 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
 
     private Cursor mCursor;
     private File mPath;
-    private View.OnClickListener mOnClickItem;
+    private final View.OnClickListener mOnClickItem;
 
     public VehicleAdapter(Cursor cursor, View.OnClickListener clickItem) {
         this.mCursor = cursor;
@@ -32,9 +32,9 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView mImageViewPhoto;
-        public TextView mTextViewName;
-        public TextView mTextViewFuel;
+        public final ImageView mImageViewPhoto;
+        public final TextView mTextViewName;
+        public final TextView mTextViewFuel;
 
         //public TextView mTextViewDataSync;
 

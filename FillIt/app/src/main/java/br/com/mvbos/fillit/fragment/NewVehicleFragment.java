@@ -26,7 +26,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -155,7 +154,6 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
 
         mVehicle.setName(mName.getText().toString());
         mVehicle.setFuel(mFuelsList.get(mFuel.getSelectedItemPosition()).getId());
-        //outState.putParcelable(ARG_PARAM_ID, mVehicle);
         outState.putString(ARG_PARAM_PATH, mCurrentPhotoPath);
     }
 
@@ -178,7 +176,8 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
 
         final Uri fuelUri = FillItContract.FuelEntry.CONTENT_URI;
         final Cursor cursor = getContext().getContentResolver().query(fuelUri, null, null, null, null);
-        mFuelsList = new ArrayList<>(cursor.getCount() + 1);
+
+        mFuelsList = new ArrayList<>(cursor != null ? cursor.getCount() + 1 : 0);
         mFuelsList.add(new FuelModel(0, getString(R.string.fuel_default), 0));
         mFuelsList.addAll(Arrays.asList(ModelBuilder.buildFuelList(cursor)));
 
@@ -218,7 +217,7 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
                 if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
                     if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.CAMERA)) {
-                        Toast.makeText(getContext(), "Permissão negada", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.error_permission), Toast.LENGTH_SHORT).show();
                     } else {
                         ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, PERMISSIONS_REQUEST_CAPTURE_IMAGE);
                     }
@@ -266,7 +265,7 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
                 if (success) {
                     onButtonPressed(FillItContract.VehicleEntry.CONTENT_URI);
                 } else {
-                    Toast.makeText(getContext(), "Data base error", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), R.string.error_base, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -283,8 +282,6 @@ public class NewVehicleFragment extends Fragment implements AdapterView.OnItemSe
                 } else {
                     Log.d("", "permission denied");
                 }
-
-                return;
             }
         }
     }
