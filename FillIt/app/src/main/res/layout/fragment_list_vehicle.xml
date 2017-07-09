@@ -5,13 +5,25 @@
     android:layout_height="match_parent"
     tools:context=".fragment.ListVehicleFragment">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="vertical" />
+
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/tvNoData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:scrollbars="vertical" />
-
+        android:gravity="center"
+        android:text="@string/label_no_data"
+        android:visibility="gone" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatButton"

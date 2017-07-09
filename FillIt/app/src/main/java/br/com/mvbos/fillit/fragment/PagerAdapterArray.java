@@ -9,10 +9,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
  * Created by Marcus Becker on 25/06/2017.
  */
 
-public class MainCollectionPagerAdapter extends FragmentStatePagerAdapter implements OnFragmentInteractionListener {
+public class PagerAdapterArray extends FragmentStatePagerAdapter implements OnFragmentInteractionListener {
 
     public interface DataChangeListener {
-        void updateData();
+        void pagerAdapterUpdate();
 
     }
 
@@ -20,7 +20,7 @@ public class MainCollectionPagerAdapter extends FragmentStatePagerAdapter implem
     private final Fragment[] frags;
     private final String[] titles;
 
-    public MainCollectionPagerAdapter(FragmentManager fm, Fragment[] frags, String[] titles) {
+    public PagerAdapterArray(FragmentManager fm, Fragment[] frags, String[] titles) {
         super(fm);
         this.frags = frags;
         this.titles = titles;
@@ -50,7 +50,7 @@ public class MainCollectionPagerAdapter extends FragmentStatePagerAdapter implem
         super.notifyDataSetChanged();
         for (Fragment f : frags) {
             if (f instanceof DataChangeListener) {
-                ((DataChangeListener) f).updateData();
+                ((DataChangeListener) f).pagerAdapterUpdate();
             }
         }
     }

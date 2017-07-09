@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_syncConnectionTypes_entries">
+        <item>GPS + Rede Móvel</item>
+        <item>Apenas Wifi</item>
+    </string-array>
+    <string-array name="pref_syncConnectionTypes_values">
+        <item>2</item>
+        <item>1</item>
+    </string-array>
+</resources>

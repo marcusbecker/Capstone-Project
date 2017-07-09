@@ -1,10 +1,13 @@
 package br.com.mvbos.fillit;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.UriMatcher;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -16,10 +19,11 @@ import android.view.View;
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.fragment.ListFillFragment;
 import br.com.mvbos.fillit.fragment.ListVehicleFragment;
-import br.com.mvbos.fillit.fragment.MainCollectionPagerAdapter;
 import br.com.mvbos.fillit.fragment.OnFragmentInteractionListener;
+import br.com.mvbos.fillit.fragment.PagerAdapterArray;
 import br.com.mvbos.fillit.sync.DataSyncService;
 import br.com.mvbos.fillit.sync.DataSyncStarter;
+import br.com.mvbos.fillit.util.PrefsUtil;
 
 public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
 
@@ -29,14 +33,16 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private static final int FILL = 400;
     private static final int FILL_WITH_ID = 401;
 
-    private MainCollectionPagerAdapter mCollectionPagerAdapter;
     private ViewPager mViewPager;
+    private PagerAdapterArray mCollectionPagerAdapter;
+
 
     private boolean leave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         DataSyncStarter.scheduleTask(this);
 
         final String authority = FillItContract.CONTENT_AUTHORITY;
@@ -47,20 +53,43 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
         setContentView(R.layout.activity_main);
 
+        SharedPreferences sharedPref = getSharedPreferences(PrefsUtil.NAME, Context.MODE_PRIVATE);
         mViewPager = (ViewPager) findViewById(R.id.pager);
 
+        if (!sharedPref.contains(PrefsUtil.PREF_FIRST_USE)) {
+            sharedPref.registerOnSharedPreferenceChangeListener(new SharedPreferences.OnSharedPreferenceChangeListener() {
+                @Override
+                public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
+                    if (PrefsUtil.PREF_FIRST_USE.equals(key)) {
+                        createPagerView();
+                        mViewPager.setVisibility(View.VISIBLE);
+                        findViewById(R.id.lnLoading).setVisibility(View.GONE);
+                    }
+                }
+            });
+
+            startSyncData();
+            mViewPager.setVisibility(View.GONE);
+            findViewById(R.id.lnLoading).setVisibility(View.VISIBLE);
+
+        } else {
+            createPagerView();
+        }
+    }
+
+    private void createPagerView() {
         final Fragment[] frags = new Fragment[]{
-                ListFillFragment.newInstance("", ""),
-                ListVehicleFragment.newInstance("", "")};
+                ListFillFragment.newInstance(),
+                ListVehicleFragment.newInstance()};
+
         final String[] titles = new String[]{
                 getString(R.string.label_tab_one),
                 getString(R.string.label_tab_two)};
 
-        mCollectionPagerAdapter = new MainCollectionPagerAdapter(
+        mCollectionPagerAdapter = new PagerAdapterArray(
                 getSupportFragmentManager(),
                 frags,
                 titles);
-
 
         mViewPager.setAdapter(mCollectionPagerAdapter);
     }
@@ -88,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
                 showReport();
                 return true;
             case R.id.menu_config:
+                showConfig();
                 return true;
             case R.id.menu_sync_data:
                 startSyncData();
@@ -129,6 +159,11 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
     private void showReport() {
         Intent intent = new Intent(this, ReportIncreaseActivity.class);
         startActivity(intent);
+    }
+
+    private void showConfig() {
+        Intent i = new Intent(this, SettingsActivity.class);
+        startActivity(i);
     }
 
     private void startSyncData() {

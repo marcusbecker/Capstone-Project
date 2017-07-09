@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
@@ -23,6 +24,7 @@ import java.util.Locale;
 import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.util.Http;
+import br.com.mvbos.fillit.util.PrefsUtil;
 
 /**
  * Created by Marcus Becker on 20/06/2017.
@@ -34,7 +36,7 @@ public class DataSyncTask {
     public static final String ACTION_SYNC = "dataSync";
 
     public static void executeTask(Context context, String action) {
-        short load = 2;
+        short load = 0;
 
         final String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
 
@@ -69,6 +71,11 @@ public class DataSyncTask {
                     }
 
                     resolver.bulkInsert(FillItContract.FuelEntry.CONTENT_URI, values);
+
+                    final SharedPreferences pref = context.getSharedPreferences(PrefsUtil.NAME, Context.MODE_PRIVATE);
+                    final SharedPreferences.Editor edit = pref.edit();
+                    edit.putLong(PrefsUtil.PREF_FIRST_USE, Calendar.getInstance().getTimeInMillis());
+                    edit.commit();
 
                 } catch (IOException e) {
                     e.printStackTrace();

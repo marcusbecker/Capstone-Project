@@ -20,13 +20,9 @@ import br.com.mvbos.fillit.R;
 import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.item.FillAdapter;
 
-public class ListFillFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, MainCollectionPagerAdapter.DataChangeListener {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    private static final int ID_FILL_LOADER = 101;
+public class ListFillFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, PagerAdapterArray.DataChangeListener {
 
-    private String mParam1;
-    private String mParam2;
+    private static final int ID_FILL_LOADER = 101;
 
     private FillAdapter mAdapter;
     private RecyclerView mRecyclerView;
@@ -36,22 +32,14 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
     public ListFillFragment() {
     }
 
-    public static ListFillFragment newInstance(String param1, String param2) {
+    public static ListFillFragment newInstance() {
         ListFillFragment fragment = new ListFillFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -124,7 +112,7 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
                 FillItContract.FuelEntry.COLUMN_NAME_NAME
         };
 
-        final String mSelectionClause = ""; //FillItContract.VehicleEntry._ID + " = ?"
+        final String mSelectionClause = null;
         final String[] mSelectionArgs = {};
         final String mSortOrder = null;
 
@@ -145,6 +133,12 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
             mAdapter.swapCursor(data);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.tvNoData).setVisibility(View.GONE);
+
+        } else {
+            mRecyclerView.setVisibility(View.GONE);
+            getView().findViewById(R.id.tvNoData).setVisibility(View.VISIBLE);
         }
     }
 
@@ -164,10 +158,9 @@ public class ListFillFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
-    public void updateData() {
+    public void pagerAdapterUpdate() {
         if (isAdded()) {
             getLoaderManager().restartLoader(ID_FILL_LOADER, null, this);
         }
-
     }
 }

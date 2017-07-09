@@ -22,19 +22,12 @@ import br.com.mvbos.fillit.data.FillItContract;
 import br.com.mvbos.fillit.item.VehicleAdapter;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Created by Marcus Becker on 11/06/2017.
  */
-public class ListVehicleFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, MainCollectionPagerAdapter.DataChangeListener {
 
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class ListVehicleFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, PagerAdapterArray.DataChangeListener {
 
     public static final int ID_VEHICLE_LOADER = 25;
-
-
-    private String mParam1;
-    private String mParam2;
-
 
     private RecyclerView mRecyclerView;
 
@@ -44,22 +37,20 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     public ListVehicleFragment() {
     }
 
-    public static ListVehicleFragment newInstance(String param1, String param2) {
+    public static ListVehicleFragment newInstance() {
         ListVehicleFragment fragment = new ListVehicleFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_list_vehicle, container, false);
     }
 
     @Override
@@ -79,20 +70,8 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        //setEmptyText("No phone numbers");
-        //setHasOptionsMenu(true);
-        //setListShown(false);
-
         getLoaderManager().initLoader(ID_VEHICLE_LOADER, null, this);
     }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_list_vehicle, container, false);
-    }
-
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -130,10 +109,9 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
                         FillItContract.FuelEntry.COLUMN_NAME_NAME
                 };
 
-                final String mSelectionClause = ""; //FillItContract.VehicleEntry._ID + " = ?"
+                final String mSelectionClause = null;
                 final String[] mSelectionArgs = {};
                 final String mSortOrder = null;
-
 
                 final Uri uri = FillItContract.BASE_CONTENT_URI
                         .buildUpon()
@@ -156,6 +134,12 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if (data != null && data.moveToFirst()) {
             mAdapter.swapCursor(data);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            getView().findViewById(R.id.tvNoData).setVisibility(View.GONE);
+
+        } else {
+            mRecyclerView.setVisibility(View.GONE);
+            getView().findViewById(R.id.tvNoData).setVisibility(View.VISIBLE);
         }
     }
 
@@ -175,7 +159,7 @@ public class ListVehicleFragment extends Fragment implements LoaderManager.Loade
     }
 
     @Override
-    public void updateData() {
+    public void pagerAdapterUpdate() {
         if (isAdded()) {
             getLoaderManager().restartLoader(ID_VEHICLE_LOADER, null, this);
         }

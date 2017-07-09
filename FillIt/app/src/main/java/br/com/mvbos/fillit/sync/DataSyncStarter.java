@@ -1,6 +1,9 @@
 package br.com.mvbos.fillit.sync;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.firebase.jobdispatcher.Constraint;
@@ -12,6 +15,8 @@ import com.firebase.jobdispatcher.Lifetime;
 import com.firebase.jobdispatcher.Trigger;
 
 import java.util.concurrent.TimeUnit;
+
+import br.com.mvbos.fillit.R;
 
 /**
  * Created by Marcus Becker on 20/06/2017.
@@ -26,8 +31,18 @@ public class DataSyncStarter {
 
 
     synchronized public static void scheduleTask(@NonNull final Context context) {
-        if (initializes)
+        final Resources resources = context.getResources();
+        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+
+        boolean enableSync = true;
+
+        if (pref.contains(resources.getString(R.string.pref_sync))) {
+            enableSync = pref.getBoolean(resources.getString(R.string.pref_sync), enableSync);
+        }
+
+        if (initializes || !enableSync) {
             return;
+        }
 
         Driver driver = new GooglePlayDriver(context);
         FirebaseJobDispatcher dispatcher = new FirebaseJobDispatcher(driver);

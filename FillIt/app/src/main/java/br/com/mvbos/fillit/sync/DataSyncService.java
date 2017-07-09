@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import br.com.mvbos.fillit.R;
+
 /**
  * Created by Marcus Becker on 24/06/2017.
  */
@@ -26,6 +28,6 @@ public class DataSyncService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
 
-        Toast.makeText(this, "Sincronização finalizada.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.label_end_sync), Toast.LENGTH_SHORT).show();
     }
 }

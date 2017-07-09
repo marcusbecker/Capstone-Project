@@ -65,6 +65,7 @@
         <service android:name=".sync.DataSyncService" />
 
         <activity android:name=".ReportIncreaseActivity"></activity>
+        <activity android:name=".SettingsActivity"></activity>
     </application>
 
 </manifest>
