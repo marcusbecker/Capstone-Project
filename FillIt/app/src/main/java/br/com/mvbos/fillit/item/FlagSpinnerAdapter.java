@@ -47,6 +47,7 @@ public class FlagSpinnerAdapter extends ArrayAdapter<FlagModel> {
         View row = inflater.inflate(R.layout.item_flag_spinner, parent, false);
 
         TextView textView = (TextView) row.findViewById(R.id.spinnerTextView);
+
         textView.setText(list[position].getName());
 
         ImageView imageView = (ImageView) row.findViewById(R.id.spinnerImageView);
@@ -59,8 +60,4 @@ public class FlagSpinnerAdapter extends ArrayAdapter<FlagModel> {
         return row;
     }
 
-    @Override
-    public int getCount() {
-        return list.length;
-    }
 }

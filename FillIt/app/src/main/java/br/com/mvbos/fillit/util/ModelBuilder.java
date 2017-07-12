@@ -63,30 +63,98 @@ public class ModelBuilder {
         return v;
     }
 
-    public static VehicleModel[] buildVehicleList(Cursor query) {
-        VehicleModel[] list = new VehicleModel[query.getCount()];
-
-        short i = 0;
-        while (query.moveToNext()) {
-            VehicleModel v = new VehicleModel(0);
-            v.setId(query.getLong(query.getColumnIndex(FillItContract.VehicleEntry._ID)));
-            v.setPhoto(query.getString(query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_PHOTO)));
-            v.setName(query.getString(query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_NAME)));
-            v.setFuel(query.getLong(query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_FUEL)));
-            v.setDataSync(query.getLong(query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_DATASYNC)));
-
-            list[i++] = v;
+    public static FillModel[] buildFillList(Cursor query) {
+        if (query == null || !query.moveToFirst()) {
+            return new FillModel[0];
         }
+
+        FillModel[] list = new FillModel[query.getCount()];
+
+        int i = 0;
+        do {
+            FillModel model = new FillModel(0);
+
+            model.setId(query.getLong(query.getColumnIndex(FillItContract.FillEntry._ID)));
+            model.setGasStation(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_GASSTATION)));
+            model.setVehicle(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_VEHICLE)));
+            model.setFuel(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_FUEL)));
+            model.setDate(query.getLong(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATE)));
+            model.setPrice(query.getDouble(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_PRICE)));
+            model.setLiters(query.getInt(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LITERS)));
+            model.setLat(query.getDouble(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LAT)));
+            model.setLng(query.getDouble(query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LNG)));
+
+            final int dataSyncIndex = query.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATASYNC);
+            if (dataSyncIndex > -1) {
+                model.setDataSync(query.getLong(dataSyncIndex));
+            }
+
+            final int gasStationIndex = query.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_NAME);
+            final int photoIndex = query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_PHOTO);
+            final int vehicleIndex = query.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_NAME);
+            final int fuelIndex = query.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_NAME);
+
+            if (gasStationIndex > -1) {
+                final String gasStation = query.getString(gasStationIndex);
+                model.setGasStationName(gasStation);
+            }
+
+            if (photoIndex > -1) {
+                final String photo = query.getString(photoIndex);
+                model.setVehicleIcon(photo);
+            }
+
+            if (vehicleIndex > -1) {
+                final String vehicle = query.getString(vehicleIndex);
+                model.setVehicleName(vehicle);
+            }
+
+            if (fuelIndex > -1) {
+                final String fuel = query.getString(fuelIndex);
+                model.setFuelName(fuel);
+            }
+
+            list[i] = model;
+            i++;
+
+        } while (query.moveToNext());
 
         query.close();
         return list;
     }
 
+    public static VehicleModel[] buildVehicleList(Cursor cursor) {
+        if (cursor == null || !cursor.moveToFirst()) {
+            return new VehicleModel[0];
+        }
+
+        VehicleModel[] list = new VehicleModel[cursor.getCount()];
+
+        short i = 0;
+        do {
+            VehicleModel v = new VehicleModel(0);
+            v.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.VehicleEntry._ID)));
+            v.setPhoto(cursor.getString(cursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_PHOTO)));
+            v.setName(cursor.getString(cursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_NAME)));
+            v.setFuel(cursor.getLong(cursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_FUEL)));
+            v.setDataSync(cursor.getLong(cursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_DATASYNC)));
+
+            list[i++] = v;
+        } while (cursor.moveToNext());
+
+        cursor.close();
+        return list;
+    }
+
     public static FlagModel[] buildFlagList(Cursor cursor) {
+        if (cursor == null || !cursor.moveToFirst()) {
+            return new FlagModel[0];
+        }
+
         FlagModel[] list = new FlagModel[cursor.getCount()];
 
         short i = 0;
-        while (cursor.moveToNext()) {
+        do {
             FlagModel f = new FlagModel(0);
             f.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.FlagEntry._ID)));
             f.setName(cursor.getString(cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME)));
@@ -94,28 +162,28 @@ public class ModelBuilder {
             f.setDataSync(cursor.getLong(cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_DATASYNC)));
 
             list[i++] = f;
-        }
+        } while (cursor.moveToNext());
 
         cursor.close();
         return list;
     }
 
     public static FuelModel[] buildFuelList(Cursor cursor) {
-        if (cursor == null) {
+        if (cursor == null || !cursor.moveToFirst()) {
             return new FuelModel[0];
         }
 
         FuelModel[] list = new FuelModel[cursor.getCount()];
 
         short i = 0;
-        while (cursor.moveToNext()) {
+        do {
             FuelModel v = new FuelModel();
             v.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.FuelEntry._ID)));
             v.setName(cursor.getString(cursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_NAME)));
             v.setDataSync(cursor.getLong(cursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_DATASYNC)));
 
             list[i++] = v;
-        }
+        } while (cursor.moveToNext());
 
         cursor.close();
         return list;
@@ -144,13 +212,17 @@ public class ModelBuilder {
 
 
     public static GasStationModel[] buildGasStationArray(Cursor cursor) {
+        if (cursor == null || !cursor.moveToFirst()) {
+            return new GasStationModel[0];
+        }
+
         GasStationModel[] list = new GasStationModel[cursor.getCount()];
 
         short i = 0;
         int flagNameIndex = cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME);
         int flagIconIndex = cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_ICON);
 
-        while (cursor.moveToNext()) {
+        do {
             GasStationModel g = new GasStationModel(0);
             g.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry._ID)));
             g.setName(cursor.getString(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_NAME)));
@@ -169,19 +241,23 @@ public class ModelBuilder {
             }
 
             list[i++] = g;
-        }
+        } while (cursor.moveToNext());
 
         cursor.close();
         return list;
     }
 
     public static List<GasStationModel> buildGasStationList(Cursor cursor) {
+        if (cursor == null || !cursor.moveToFirst()) {
+            return new ArrayList<>(5);
+        }
+
         List<GasStationModel> list = new ArrayList<>(cursor.getCount() + 5);
 
         int flagNameIndex = cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_NAME);
         int flagIconIndex = cursor.getColumnIndex(FillItContract.FlagEntry.COLUMN_NAME_ICON);
 
-        while (cursor.moveToNext()) {
+        do {
             GasStationModel g = new GasStationModel(0);
             g.setId(cursor.getLong(cursor.getColumnIndex(FillItContract.GasStationEntry._ID)));
             g.setName(cursor.getString(cursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_NAME)));
@@ -200,7 +276,7 @@ public class ModelBuilder {
             }
 
             list.add(g);
-        }
+        } while (cursor.moveToNext());
 
         cursor.close();
         return list;

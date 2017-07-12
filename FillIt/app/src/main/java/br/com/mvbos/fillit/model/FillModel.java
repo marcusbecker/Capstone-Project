@@ -19,6 +19,10 @@ public class FillModel implements Parcelable {
     private double lat;
     private double lng;
     private long dataSync;
+    private String fuelName;
+    private String vehicleName;
+    private String vehicleIcon;
+    private String gasStationName;
 
     public FillModel(long id) {
         this.id = id;
@@ -181,5 +185,37 @@ public class FillModel implements Parcelable {
 
     public boolean hasLatLng() {
         return lat != 0 && lng != 0;
+    }
+
+    public String getFuelName() {
+        return fuelName;
+    }
+
+    public String getVehicleName() {
+        return vehicleName;
+    }
+
+    public String getVehicleIcon() {
+        return vehicleIcon;
+    }
+
+    public String getGasStationName() {
+        return gasStationName;
+    }
+
+    public void setFuelName(String fuelName) {
+        this.fuelName = fuelName;
+    }
+
+    public void setVehicleName(String vehicleName) {
+        this.vehicleName = vehicleName;
+    }
+
+    public void setVehicleIcon(String vehicleIcon) {
+        this.vehicleIcon = vehicleIcon;
+    }
+
+    public void setGasStationName(String gasStationName) {
+        this.gasStationName = gasStationName;
     }
 }

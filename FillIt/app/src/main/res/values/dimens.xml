@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="widget_default_height">164dp</dimen>
+    <dimen name="widget_default_width">164dp</dimen>
+    <dimen name="widget_margin">2dp</dimen>
+</resources>

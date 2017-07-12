@@ -33,7 +33,7 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         appContext = InstrumentationRegistry.getTargetContext();
 
-        long mGasstation = 1;
+        long mGasStation = 1;
         long mVehicle = 1;
         long mFuel = 1;
         long mDate = new Date().getTime();
@@ -43,15 +43,15 @@ public class ExampleInstrumentedTest {
         double mLng = 10110;
         long mDataSync = new Date().getTime();
 
-        Uri uri = testInsert(mGasstation, mVehicle, mFuel, mDate, mPrice, mLiters, mLat, mLng, mDataSync);
+        Uri uri = testInsert(mGasStation, mVehicle, mFuel, mDate, mPrice, mLiters, mLat, mLng, mDataSync);
 
         assertNotEquals(uri, null);
 
         Log.e("br.com.mvbos.fillit", "URI " + uri);
 
-        testQuery(mGasstation, mVehicle, mFuel, mDate, mPrice, mLiters, mLat, mLng, mDataSync);
+        testQuery(mGasStation, mVehicle, mFuel, mDate, mPrice, mLiters, mLat, mLng, mDataSync);
 
-        int ru = testUpdate(mGasstation, mVehicle, mFuel, mDate, mPrice, mLiters, mLat, mLng, mDataSync);
+        int ru = testUpdate(mGasStation, mVehicle, mFuel, mDate, mPrice, mLiters, mLat, mLng, mDataSync);
 
         assertEquals(ru, 1);
 
@@ -184,6 +184,9 @@ public class ExampleInstrumentedTest {
                 assertEquals(mLng, lng, 0.002);
                 assertEquals(mDataSync, dataSync, 0.002);
             }
+
+            mCursor.close();
+
         } else {
         }
     }

@@ -6,6 +6,7 @@
     <string name="label_tab_two">Veículos</string>
     <string name="no_gas_station">Sem posto cadastrado</string>
     <string name="format_litter_fuel_price">%1$d litros de %2$s por %3$s</string>
+    <string name="format_litter_price">%1$d litros, %2$s, %3$s</string>
     <string name="current_location">Você está aqui</string>
     <string name="label_sync_data">Sincronizar</string>
     <string name="label_new_gas_station">Novo Posto</string>
@@ -37,5 +38,6 @@
     <string name="label_item_photo">Item foto</string>
     <string name="error_permission">Permissão negada</string>
     <string name="error_base">Erro ao acessar a base</string>
+    <string name="title_widget">Gastos</string>
 
 </resources>

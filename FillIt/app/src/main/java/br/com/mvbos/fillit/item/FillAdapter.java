@@ -88,21 +88,14 @@ public class FillAdapter extends RecyclerView.Adapter<FillAdapter.ViewHolder> {
     public void onBindViewHolder(ViewHolder holder, int position) {
         mCursor.moveToPosition(position);
 
-        //long gasStation = mCursor.getLong(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_GASSTATION));
         String gasStation = mCursor.getString(mCursor.getColumnIndex(FillItContract.GasStationEntry.COLUMN_NAME_NAME));
-
-        //long vehicle = mCursor.getLong(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_VEHICLE));
         String photo = mCursor.getString(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_PHOTO));
         String vehicle = mCursor.getString(mCursor.getColumnIndex(FillItContract.VehicleEntry.COLUMN_NAME_NAME));
-
-        //long fuel = mCursor.getLong(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_FUEL));
         String fuel = mCursor.getString(mCursor.getColumnIndex(FillItContract.FuelEntry.COLUMN_NAME_NAME));
 
         long date = mCursor.getLong(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_DATE));
         double price = mCursor.getDouble(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_PRICE));
         int liters = mCursor.getInt(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LITERS));
-        double lat = mCursor.getDouble(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LAT));
-        double lng = mCursor.getDouble(mCursor.getColumnIndex(FillItContract.FillEntry.COLUMN_NAME_LNG));
 
         if (gasStation == null) {
             holder.mGasStation.setText(mResources.getString(R.string.no_gas_station));
@@ -116,19 +109,11 @@ public class FillAdapter extends RecyclerView.Adapter<FillAdapter.ViewHolder> {
         holder.mDate.setText(dateFormat.format(new Date(date)));
         holder.mLiters.setText(String.format(t, liters, fuel, numberFormat.format(price)));
 
-        //holder.mLat.setText(String.valueOf(lat));
-        //holder.mLng.setText(String.valueOf(lng));
-
-
         if (photo != null && !photo.isEmpty()) {
             final Bitmap imageBitmap = BitmapFactory.decodeFile(new File(mPath, photo).getAbsolutePath());
             holder.mImageViewPhoto.setImageBitmap(FileUtil.roundBitmap(imageBitmap));
         }
 
-    }
-
-    public File getPath() {
-        return mPath;
     }
 
     public void setPath(File path) {

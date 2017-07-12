@@ -156,7 +156,20 @@ public class GasStationDialogFragment extends DialogFragment implements LoaderMa
 
             SpinnerAdapter adapter = new FlagSpinnerAdapter(getContext(), mFlagsList);
             mFlagSpinner.setAdapter(adapter);
-            mFlagSpinner.setSelection((int) mFill.getGasStation());
+
+            short sel = 0;
+
+            if (mFill.getGasStation() > 0) {
+                for (FlagModel f : mFlagsList) {
+                    if (mFill.getGasStation() == f.getId()) {
+                        break;
+                    }
+
+                    sel++;
+                }
+            }
+
+            mFlagSpinner.setSelection(sel);
         }
     }
 
