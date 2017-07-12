@@ -27,8 +27,8 @@
         android:visibility="gone">
 
         <ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="@dimen/photo_size"
+            android:layout_height="@dimen/photo_size"
             android:background="@drawable/image_car_fill"
             android:contentDescription="@string/label_loading" />
 

@@ -25,5 +25,5 @@ Based on:
     android:layout_height="wrap_content"
     android:ellipsize="marquee"
     android:maxLines="1"
-    android:padding="16dp"
+    android:padding="@dimen/spinner_item_padding"
     android:textAlignment="inherit" />

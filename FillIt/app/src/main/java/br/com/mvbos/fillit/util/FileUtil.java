@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
+ * Calsse utilitaria para tabalhar com Bitmaps
  * Created by Marcus Becker on 17/06/2017.
  */
 
@@ -96,8 +97,6 @@ public class FileUtil {
 
             setPic(imageView, photoPath);
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

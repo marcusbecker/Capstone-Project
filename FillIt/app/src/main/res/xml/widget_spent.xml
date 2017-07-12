@@ -4,6 +4,6 @@
     android:initialLayout="@layout/widget_spent"
     android:minHeight="@dimen/widget_default_height"
     android:minWidth="@dimen/widget_default_width"
-    android:previewImage="@drawable/ic_create_white_24dp"
+    android:previewImage="@drawable/widget_preview"
     android:resizeMode="vertical"
     android:updatePeriodMillis="300000" />

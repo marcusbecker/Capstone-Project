@@ -20,15 +20,15 @@
                 android:id="@+id/mapFragment"
                 class="com.google.android.gms.maps.SupportMapFragment"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                app:elevation="6dp" />
+                android:layout_height="@dimen/map_width"
+                app:elevation="@dimen/map_elevation" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/mapFloatButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|right|end"
-                android:layout_margin="16dp"
+                android:layout_margin="@dimen/float_button_margin"
                 android:src="@drawable/ic_create_white_24dp"
                 app:fabSize="normal" />
 
@@ -40,8 +40,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/map"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="@dimen/spinner_margin"
+            android:layout_marginTop="@dimen/spinner_margin"
             android:hint="@string/label_gas_station">
 
         </Spinner>
@@ -52,8 +52,8 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/spGasStation"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="@dimen/spinner_margin"
+            android:layout_marginTop="@dimen/spinner_margin"
             android:hint="@string/label_vehicle"
             android:inputType="text" />
 
@@ -63,11 +63,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/spVehicle"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp" />
+            android:layout_marginBottom="@dimen/spinner_margin"
+            android:layout_marginTop="@dimen/spinner_margin" />
 
         <LinearLayout
-            android:id="@+id/d"
+            android:id="@+id/llGroupItem"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -75,19 +75,19 @@
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="@dimen/no_dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".25"
                 android:text="@string/label_liters" />
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="@dimen/no_dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".35"
                 android:text="@string/label_price" />
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="@dimen/no_dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".40"
                 android:text="@string/label_total" />
@@ -98,12 +98,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/d"
+            android:layout_below="@+id/llGroupItem"
             android:orientation="horizontal">
 
             <EditText
                 android:id="@+id/etLiters"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/no_dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".25"
                 android:hint="@string/label_number_example"
@@ -111,7 +111,7 @@
 
             <EditText
                 android:id="@+id/etPrice"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/no_dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".35"
                 android:hint="@string/label_number_example"
@@ -119,7 +119,7 @@
 
             <EditText
                 android:id="@+id/etTotal"
-                android:layout_width="0dp"
+                android:layout_width="@dimen/no_dp"
                 android:layout_height="wrap_content"
                 android:layout_weight=".40"
                 android:hint="@string/label_number_example"

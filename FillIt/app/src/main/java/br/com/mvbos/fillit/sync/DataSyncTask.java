@@ -119,9 +119,7 @@ class DataSyncTask {
                 edit.putLong(PrefsUtil.PREF_FIRST_USE, Calendar.getInstance().getTimeInMillis());
                 edit.apply();
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
+            } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
 
@@ -147,21 +145,11 @@ class DataSyncTask {
 
         String advertId = null;
 
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.KITKAT) {
-            return null;
-        }
-
         try {
             AdvertisingIdClient.Info idInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
             advertId = idInfo.getId();
 
-        } catch (GooglePlayServicesNotAvailableException e) {
-            e.printStackTrace();
-        } catch (GooglePlayServicesRepairableException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
+        } catch (GooglePlayServicesNotAvailableException | GooglePlayServicesRepairableException | IOException | NullPointerException e) {
             e.printStackTrace();
         }
 
@@ -252,9 +240,7 @@ class DataSyncTask {
         if (!ops.isEmpty()) {
             try {
                 context.getContentResolver().applyBatch(FillItContract.CONTENT_AUTHORITY, ops);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (OperationApplicationException e) {
+            } catch (RemoteException | OperationApplicationException e) {
                 e.printStackTrace();
             }
         }

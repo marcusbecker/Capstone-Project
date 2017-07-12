@@ -286,9 +286,7 @@ public class NewFillFragment extends Fragment implements
             startActivityForResult(intent, PLACE_PICKER_REQUEST);
 
 
-        } catch (GooglePlayServicesRepairableException e) {
-            e.printStackTrace();
-        } catch (GooglePlayServicesNotAvailableException e) {
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
     }

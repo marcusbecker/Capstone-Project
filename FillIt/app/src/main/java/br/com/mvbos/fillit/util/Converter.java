@@ -2,9 +2,6 @@ package br.com.mvbos.fillit.util;
 
 import android.widget.EditText;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-
 /**
  * Created by Marcus Becker on 26/06/2017.
  */

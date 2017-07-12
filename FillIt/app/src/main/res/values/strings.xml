@@ -24,7 +24,7 @@
     <string name="pref_sync">Data use</string>
     <string name="pref_sync_summ">Use GPS and data always as possible</string>
     <string name="pref_syncConnectionType">Select data types</string>
-    <string name="pref_syncConnectionTypes_default">2</string>
+    <string name="pref_syncConnectionTypes_default" translatable="false">2</string>
     <string name="pref_share">Share prices</string>
     <string name="pref_share_summ">Share prices and location of posts anonymously</string>
     <string name="label_take_photo">Take a picture</string>
@@ -44,6 +44,6 @@
     <string name="error_permission">Permission denied</string>
     <string name="error_base">Data base error</string>
     <string name="title_widget">Values spent</string>
-    <string name="no_data" translatable="false">... 000 000 00</string>
+    <string name="no_data" translatable="false">...</string>
 
 </resources>

@@ -3,5 +3,5 @@
     android:id="@+id/widget_view_id"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="3dp"
-    android:layout_marginTop="3dp" />
+    android:layout_marginLeft="@dimen/widget_list_margin"
+    android:layout_marginTop="@dimen/widget_list_margin" />

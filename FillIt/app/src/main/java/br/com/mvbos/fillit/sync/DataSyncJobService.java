@@ -41,7 +41,6 @@ public class DataSyncJobService extends com.firebase.jobdispatcher.JobService {
             mTask.cancel(true);
         }
 
-        boolean jobShouldBeRetriedAgain = true;
-        return jobShouldBeRetriedAgain;
+        return true;
     }
 }

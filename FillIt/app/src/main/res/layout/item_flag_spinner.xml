@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="@dimen/item_layout_padding">
 
     <ImageView
         android:id="@+id/spinnerImageView"
@@ -17,7 +17,7 @@
         android:id="@+id/spinnerTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="5dp"
+        android:padding="@dimen/text_padding"
         tools:text="Text sample" />
 
 </LinearLayout>

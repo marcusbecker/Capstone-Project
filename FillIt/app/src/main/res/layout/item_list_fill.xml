@@ -6,9 +6,9 @@
 
     <ImageView
         android:id="@+id/ivPhoto"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
-        android:layout_margin="8dp"
+        android:layout_width="@dimen/photo_item_size"
+        android:layout_height="@dimen/photo_item_size"
+        android:layout_margin="@dimen/photo_item_margin"
         android:adjustViewBounds="true"
         android:contentDescription="@string/label_item_photo" />
 

@@ -30,7 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right|end"
-        android:layout_margin="16dp"
+        android:layout_margin="@dimen/float_button_margin"
         android:onClick="addFill"
         android:src="@mipmap/ic_fill_center"
         app:fabSize="normal" />

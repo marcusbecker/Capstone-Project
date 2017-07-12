@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp">
+    android:padding="@dimen/item_layout_padding">
 
     <ImageView
         android:id="@+id/spImageView"
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/spImageView"
-        android:padding="5dp"
+        android:padding="@dimen/text_padding"
         tools:text="Text sample" />
 
     <TextView
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/spTextViewGas"
         android:layout_below="@+id/spTextViewGas"
-        android:padding="5dp"
+        android:padding="@dimen/text_padding"
         tools:text="Text sample" />
 
 </RelativeLayout>

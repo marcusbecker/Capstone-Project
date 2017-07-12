@@ -39,8 +39,8 @@ public class ExampleInstrumentedTest {
         long mDate = new Date().getTime();
         double mPrice = 3.75;
         int mLiters = 5;
-        double mLat = 01001;
-        double mLng = 10110;
+        double mLat = 513;
+        double mLng = 513;
         long mDataSync = new Date().getTime();
 
         Uri uri = testInsert(mGasStation, mVehicle, mFuel, mDate, mPrice, mLiters, mLat, mLng, mDataSync);
