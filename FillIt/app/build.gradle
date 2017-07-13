@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'CapstoneKey'
-            keyPassword '_zS.MDWdez2bz^AG'
-            storeFile file('C:/GitHub/Capstone-Project/key.jks')
-            storePassword "k\\~U*qnu8SB{BN*]"
+            keyAlias 'GitHubKey'
+            keyPassword '4x60Ul0E'
+            storeFile file('C:/GitHub/Capstone-Project/FillIt/githubkey.jks')
+            storePassword '6uranDGZ'
         }
     }
     compileSdkVersion 25
@@ -23,6 +23,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
 }
