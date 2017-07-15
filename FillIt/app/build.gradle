@@ -5,7 +5,7 @@ android {
         config {
             keyAlias 'GitHubKey'
             keyPassword '4x60Ul0E'
-            storeFile file('C:/GitHub/Capstone-Project/FillIt/githubkey.jks')
+            storeFile file('githubkey.jks')
             storePassword '6uranDGZ'
         }
     }
